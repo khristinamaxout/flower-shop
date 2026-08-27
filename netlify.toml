@@ -1,7 +1,0 @@
-# Netlify — подключается к GitHub, собирает сам
-[build]
-  command = "npm run build:netlify"
-  publish = "dist"
-
-[build.environment]
-  NODE_VERSION = "20"
