@@ -2,6 +2,21 @@
 
 Премиальный конверсионный сайт для цветочного магазина с доставкой по Саратову.
 
+## Сайт онлайн (для телефона)
+
+**Прямая ссылка:** [https://khristinamaxout.github.io/flower-shop/](https://khristinamaxout.github.io/flower-shop/)
+
+Откройте в Safari или Chrome на телефоне — можно отправить клиенту в WhatsApp или Telegram.
+
+> После первого push в `main` подождите 1–2 минуты, пока завершится деплой.  
+> Если страница 404: GitHub → репозиторий **flower-shop** → **Settings** → **Pages** → Source: **GitHub Actions**.
+
+## Автодеплой
+
+При каждом push в ветку `main` сайт автоматически публикуется на GitHub Pages (workflow `.github/workflows/deploy-pages.yml`).
+
+Альтернатива — [Netlify](https://app.netlify.com): Import project → репозиторий `flower-shop` → настройки уже в `netlify.toml`.
+
 ## Запуск
 
 ```bash
