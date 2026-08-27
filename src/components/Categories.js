@@ -1,21 +1,32 @@
 import { categories } from '../data/catalog.js';
 import { imgAttrs } from '../data/images.js';
 
+const layoutClasses = [
+  'category-card--featured',
+  '',
+  'category-card--wide',
+  '',
+  'category-card--tall',
+  '',
+  'category-card--wide',
+  '',
+];
+
 export function renderCategories() {
   return `
-    <section class="section" id="catalog" aria-labelledby="catalog-title">
+    <section class="section pattern-bg pattern-bg--section" id="catalog" aria-labelledby="catalog-title">
       <div class="container">
         <header class="section-header reveal">
           <p class="section-label">Каталог</p>
           <h2 class="section-title" id="catalog-title">Выберите направление</h2>
-          <p class="section-subtitle">Букеты, композиции и всё, что превращает цветы в&nbsp;настоящий подарок</p>
+          <p class="section-subtitle">Не каталог ради каталога — путь к&nbsp;идеальному подарку</p>
         </header>
 
-        <div class="categories-grid categories-scroll">
+        <div class="categories-editorial categories-scroll">
           ${categories
             .map(
               (cat, i) => `
-            <a href="#bestsellers" class="category-card mobile-slide-in" data-category="${cat.id}" style="--anim-delay: ${i * 0.08}s">
+            <a href="#bestsellers" class="category-card ${layoutClasses[i] || ''} mobile-slide-in" data-category="${cat.id}" style="--anim-delay: ${i * 0.08}s">
               <div class="category-card__image">
                 <img ${imgAttrs(cat.image, cat.alt, 400, 533)}>
               </div>

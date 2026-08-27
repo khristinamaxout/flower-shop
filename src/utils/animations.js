@@ -25,7 +25,6 @@ export function initRevealAnimations() {
 
   revealElements.forEach((el) => observer.observe(el));
 
-  /* Fallback: показать всё через 3 сек на случай проблем с observer */
   setTimeout(() => {
     revealElements.forEach((el) => el.classList.add('is-visible'));
   }, 3000);
@@ -36,7 +35,7 @@ export function initRevealAnimations() {
  */
 export function initScrollAnimations(root = document) {
   const animated = root.querySelectorAll(
-    '.mobile-slide-in, .mobile-slide-up, .mobile-scale-in, .mobile-anim'
+    '.mobile-slide-in, .mobile-slide-up, .mobile-scale-in, .mobile-anim, .image-reveal'
   );
 
   if (!animated.length) return;
@@ -76,32 +75,23 @@ export function initMobileAnimations() {
 
   const heroImg = document.querySelector('.hero__img');
   if (heroImg) {
-    heroImg.classList.add('hero__img--loaded');
+    setTimeout(() => heroImg.classList.add('hero__img--loaded'), 80);
   }
 
-  /* Mobile bar entrance */
-  const mobileBar = document.querySelector('.mobile-bar');
-  if (mobileBar && window.matchMedia('(max-width: 1023px)').matches) {
-    setTimeout(() => mobileBar.classList.add('is-visible'), 800);
-  }
-
-  /* Category horizontal scroll hint */
-  const catScroll = document.querySelector('.categories-scroll');
-  if (catScroll && window.matchMedia('(max-width: 767px)').matches) {
-    setTimeout(() => {
-      catScroll.scrollTo({ left: 60, behavior: 'smooth' });
-      setTimeout(() => catScroll.scrollTo({ left: 0, behavior: 'smooth' }), 600);
-    }, 1500);
+  const heroMedia = document.querySelector('.hero__media');
+  if (heroMedia) {
+    heroMedia.classList.add('is-revealed');
   }
 }
 
 /**
- * Subtle parallax on hero image
+ * Subtle parallax on hero image + botanical pattern
  */
 export function initHeroParallax() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
   const heroMedia = document.querySelector('.hero__img');
-  if (!heroMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.matchMedia('(max-width: 1023px)').matches) return;
+  const patterns = document.querySelectorAll('.pattern-parallax');
 
   let ticking = false;
 
@@ -112,9 +102,16 @@ export function initHeroParallax() {
         requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           const heroHeight = document.querySelector('.hero')?.offsetHeight || 0;
-          if (scrollY < heroHeight) {
-            heroMedia.style.transform = `translateY(${scrollY * 0.2}px) scale(1.04)`;
+
+          if (heroMedia && scrollY < heroHeight) {
+            const scale = 1 + scrollY * 0.00008;
+            heroMedia.style.transform = `translateY(${scrollY * 0.15}px) scale(${Math.min(scale, 1.04)})`;
           }
+
+          patterns.forEach((el) => {
+            el.style.setProperty('--pattern-y', `${scrollY * 0.03}px`);
+          });
+
           ticking = false;
         });
         ticking = true;

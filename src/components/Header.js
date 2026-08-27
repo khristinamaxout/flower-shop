@@ -10,16 +10,16 @@ export function renderHeader() {
 
         <nav class="header__nav" aria-label="Основная навигация">
           <a href="#catalog">Каталог</a>
-          <a href="#gift-finder">Подобрать подарок</a>
-          <a href="#bestsellers">Хиты</a>
-          <a href="#seasonal">Сезон</a>
-          <a href="#gallery">Работы</a>
+          <a href="#scenarios">Поводы</a>
           <a href="#delivery">Доставка</a>
+          <a href="#gallery">Работы</a>
+          <a href="#reviews">Отзывы</a>
+          <a href="#about">О нас</a>
         </nav>
 
         <div class="header__actions">
           <a href="${siteConfig.phoneLink}" class="header__phone">${siteConfig.phone}</a>
-          <a href="#catalog" class="btn btn--primary btn--sm header__cta btn--pulse">Выбрать букет</a>
+          <a href="#catalog" class="btn btn--primary btn--sm header__cta">Заказать</a>
           <button class="header__burger" aria-label="Открыть меню" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
@@ -33,10 +33,8 @@ export function renderHeader() {
         <a href="#gift-finder">Подобрать подарок</a>
         <a href="#bestsellers">Хиты продаж</a>
         <a href="#scenarios">По поводу</a>
-        <a href="#budget">По бюджету</a>
-        <a href="#seasonal">Сезон</a>
-        <a href="#gallery">Наши работы</a>
         <a href="#delivery">Доставка</a>
+        <a href="#gallery">Наши работы</a>
         <a href="#reviews">Отзывы</a>
       </nav>
       <div class="mobile-menu__contact">

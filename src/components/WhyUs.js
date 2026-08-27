@@ -2,7 +2,7 @@ import { whyUsItems } from '../data/catalog.js';
 
 export function renderWhyUs() {
   return `
-    <section class="section section--alt" id="why-us" aria-labelledby="why-us-title">
+    <section class="section section--alt" id="about" aria-labelledby="why-us-title">
       <div class="container container--narrow">
         <header class="section-header section-header--center reveal">
           <p class="section-label">Почему мы</p>

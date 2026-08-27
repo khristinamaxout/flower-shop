@@ -12,13 +12,15 @@ import { renderGallery, initGallery } from './components/Gallery.js';
 import { renderReviews } from './components/Reviews.js';
 import { renderDelivery } from './components/Delivery.js';
 import { renderFinalCta } from './components/FinalCta.js';
-import { renderFooter, renderMobileBar } from './components/Footer.js';
+import { renderFooter, renderMobileBar, initMobileBar } from './components/Footer.js';
+import { renderEmotionalCommerce } from './components/EmotionalCommerce.js';
 
 import { scenarios, categories, budgetTiers, siteConfig } from './data/catalog.js';
 import { imgAttrs } from './data/images.js';
 import {
   filterByScenario,
   getByCategory,
+  reloadProducts,
   products,
   getProductById,
   filterByBudget,
@@ -216,6 +218,7 @@ function initApp() {
       ${renderCategories()}
       ${renderBestsellers()}
       ${renderGiftFinder()}
+      ${renderEmotionalCommerce()}
       ${renderScenarios()}
       ${renderBudgetSelector()}
       ${renderGiftBuilder()}
@@ -240,6 +243,7 @@ function initApp() {
   initSeasonalCollection(handleSeasonalClick);
   initGallery(handleGalleryViewAll);
   initOrderDelegation();
+  initMobileBar();
 
   initRevealAnimations();
   initScrollAnimations();
@@ -250,6 +254,9 @@ function initApp() {
   injectSchema();
 
   window.initScrollAnimations = initScrollAnimations;
+
+  window.addEventListener('storage', () => reloadProducts());
+  window.addEventListener('products-updated', () => reloadProducts());
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

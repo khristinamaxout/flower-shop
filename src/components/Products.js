@@ -6,7 +6,7 @@ import { imgAttrs } from '../data/images.js';
 export function renderProducts(products, options = {}) {
   const {
     title = 'Выбирают чаще всего',
-    subtitle = 'Популярные букеты и композиции — проверенный выбор наших клиентов',
+    subtitle = 'Когда не знаете с чего начать — начните с проверенного',
     id = 'bestsellers',
     showAllLink = false,
     emptyMessage = null,
@@ -28,7 +28,7 @@ export function renderProducts(products, options = {}) {
           ${showAllLink ? `<a href="#catalog" class="btn btn--ghost">Весь каталог →</a>` : ''}
         </header>
 
-        <div class="products-grid" id="${id}-grid">
+        <div class="products-editorial" id="${id}-grid">
           ${gridContent}
         </div>
       </div>
@@ -75,14 +75,19 @@ export function renderProductCard(product, index = 0) {
     ? `<span class="product-card__price-old">${formatPrice(product.oldPrice)}</span><span class="product-card__price">${formatPrice(product.price)}</span>`
     : `<span class="product-card__price">${formatPrice(product.price)}</span>`;
 
+  const emotional = product.emotional
+    ? `<p class="product-card__emotional">${product.emotional}</p>`
+    : '';
+
   return `
-    <article class="product-card mobile-slide-up" data-product-id="${product.id}" style="--anim-delay: ${delay}s">
+    <article class="product-card mobile-slide-up image-reveal" data-product-id="${product.id}" style="--anim-delay: ${delay}s">
       <div class="product-card__image">
         ${renderBadge(product.badge)}
         <img ${imgAttrs(product.image, product.alt, 400, 500)}>
       </div>
       <div class="product-card__info">
         <h3 class="product-card__name">${product.name}</h3>
+        ${emotional}
         <p class="product-card__desc">${product.description}</p>
         ${renderAddOns(product)}
         <div class="product-card__footer">
@@ -106,7 +111,7 @@ export function renderBestsellers() {
   const products = getBestsellers(8);
   return renderProducts(products, {
     title: 'Выбирают чаще всего',
-    subtitle: 'Популярные букеты и композиции — проверенный выбор наших клиентов',
+    subtitle: 'Когда не знаете с чего начать — начните с проверенного',
     id: 'bestsellers',
   });
 }
@@ -133,7 +138,6 @@ export function resetBestsellersTitle() {
   const subtitleEl = document.getElementById('bestsellers-subtitle');
   if (titleEl) titleEl.textContent = 'Выбирают чаще всего';
   if (subtitleEl) {
-    subtitleEl.textContent =
-      'Популярные букеты и композиции — проверенный выбор наших клиентов';
+    subtitleEl.textContent = 'Когда не знаете с чего начать — начните с проверенного';
   }
 }

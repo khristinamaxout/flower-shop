@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:pages": "vite build",
     "preview": "vite preview",
-    "images": "node scripts/generate-images.mjs && node scripts/embed-images.mjs"
+    "images": "node scripts/build-public-images.mjs"
   },
   "devDependencies": {
     "sharp": "^0.35.4",

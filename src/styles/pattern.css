@@ -1,0 +1,48 @@
+/* Botanical brand pattern — subtle luxury paper texture */
+.pattern-bg {
+  position: relative;
+}
+
+.pattern-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/pattern-botanical.svg');
+  background-size: 480px 480px;
+  background-repeat: repeat;
+  opacity: 0.055;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+}
+
+.pattern-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pattern-bg--hero::before {
+  opacity: 0.06;
+}
+
+.pattern-bg--footer::before {
+  opacity: 0.05;
+}
+
+.pattern-bg--section::before {
+  opacity: 0.045;
+}
+
+.pattern-parallax {
+  --pattern-y: 0px;
+}
+
+.pattern-parallax::before {
+  transform: translate3d(0, var(--pattern-y), 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pattern-parallax::before {
+    transform: none;
+  }
+}

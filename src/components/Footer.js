@@ -2,14 +2,15 @@ import { siteConfig } from '../data/catalog.js';
 
 export function renderFooter() {
   const year = new Date().getFullYear();
+  const adminBase = import.meta.env.BASE_URL;
 
   return `
-    <footer class="footer" role="contentinfo">
+    <footer class="footer pattern-bg pattern-bg--footer" role="contentinfo">
       <div class="container">
         <div class="footer__grid">
           <div>
             <div class="footer__brand">Flora Atelier</div>
-            <p class="footer__tagline">Премиальные букеты и подарки с доставкой по Саратову</p>
+            <p class="footer__tagline">Цветы в Саратове — букеты, которые хочется подарить</p>
             <div class="footer__social">
               <a href="${siteConfig.telegram}" target="_blank" rel="noopener" aria-label="Telegram">TG</a>
               <a href="${siteConfig.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
@@ -39,14 +40,14 @@ export function renderFooter() {
             <div class="footer__links">
               <a href="#delivery">Доставка</a>
               <a href="#catalog">Каталог</a>
-              <a href="#" onclick="return false;">Политика конфиденциальности</a>
+              <a href="${adminBase}admin.html">Админ-панель</a>
             </div>
           </div>
         </div>
 
         <div class="footer__bottom">
-          <span>&copy; ${year} Flora Atelier. Цветы в Саратове.</span>
-          <span>Доставка цветов по Саратову ежедневно</span>
+          <span>&copy; ${year} Flora Atelier. Цветочный магазин Саратов.</span>
+          <span>Купить цветы с доставкой по Саратову</span>
         </div>
       </div>
     </footer>
@@ -55,9 +56,23 @@ export function renderFooter() {
 
 export function renderMobileBar() {
   return `
-    <div class="mobile-bar" role="navigation" aria-label="Быстрый заказ">
-      <a href="${siteConfig.phoneLink}" class="btn btn--secondary">Позвонить</a>
-      <a href="${siteConfig.whatsapp}" class="btn btn--primary btn--pulse" target="_blank" rel="noopener">Заказать</a>
+    <div class="mobile-bar" id="mobile-bar" role="navigation" aria-label="Быстрый заказ">
+      <a href="#catalog" class="btn btn--primary btn--full mobile-bar__cta">Выбрать букет</a>
     </div>
   `;
+}
+
+export function initMobileBar() {
+  const bar = document.getElementById('mobile-bar');
+  const hero = document.querySelector('.hero');
+  if (!bar || !hero) return;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      bar.classList.toggle('is-visible', !entry.isIntersecting);
+    },
+    { threshold: 0, rootMargin: '0px' }
+  );
+
+  observer.observe(hero);
 }

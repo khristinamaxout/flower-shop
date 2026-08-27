@@ -11,10 +11,16 @@
 @media (max-width: 767px) {
   :root {
     --header-height: 60px;
-    --mobile-bar-height: calc(60px + var(--safe-bottom));
-    --text-hero: clamp(2.25rem, 10vw, 3.25rem);
-    --text-3xl: clamp(1.75rem, 6vw, 2.25rem);
-    --text-4xl: clamp(2rem, 7vw, 2.75rem);
+    --mobile-bar-height: calc(64px + var(--safe-bottom));
+    --text-base: 1.125rem;
+    --text-sm: 0.9375rem;
+    --text-hero: clamp(2.625rem, 11vw, 3.25rem);
+    --text-3xl: clamp(1.875rem, 6vw, 2.375rem);
+  }
+
+  body {
+    font-size: var(--text-base);
+    line-height: 1.65;
   }
 
   .container {
