@@ -16,13 +16,13 @@ if (!existsSync(indexPath)) {
 
 const html = readFileSync(indexPath, 'utf8');
 
-if (html.includes('/flower-shop/')) {
+if (html.includes('/flower-shop/') && process.env.GITHUB_PAGES !== 'true') {
   console.error('ERROR: dist built for GitHub Pages, not Netlify!');
   console.error('Run: npm run build:netlify');
   process.exit(1);
 }
 
-if (!html.includes('./assets/') && !html.includes('src="/assets/')) {
+if (!html.includes('/assets/') && !html.includes('./assets/')) {
   console.error('ERROR: asset paths look wrong in dist/index.html');
   process.exit(1);
 }
