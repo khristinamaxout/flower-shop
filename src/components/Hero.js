@@ -15,7 +15,7 @@ export function renderHero() {
           Цветы, которые говорят за&nbsp;вас
         </h1>
         <p class="hero__subtitle mobile-anim" data-delay="2">
-          Букеты и подарки с доставкой по Саратову
+          Букеты и подарки с доставкой по Саратову · от 2 часов
         </p>
         <div class="hero__actions mobile-anim" data-delay="3">
           <a href="#catalog" class="btn btn--primary btn--lg btn--pulse">Выбрать букет</a>

@@ -1,4 +1,5 @@
 import { images, imgAttrs } from '../data/images.js';
+import { siteConfig } from '../data/catalog.js';
 
 export function renderFinalCta() {
   return `
@@ -12,7 +13,7 @@ export function renderFinalCta() {
         </h2>
         <div class="final-cta__actions reveal reveal-delay-1">
           <a href="#catalog" class="btn btn--primary btn--lg btn--pulse">Выбрать букет</a>
-          <a href="tel:+78452555012" class="btn btn--secondary btn--lg">Связаться с флористом</a>
+          <a href="${siteConfig.phoneLink}" class="btn btn--secondary btn--lg">Связаться с флористом</a>
         </div>
       </div>
     </section>

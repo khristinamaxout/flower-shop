@@ -7,7 +7,7 @@ export function renderGallery() {  return `
         <header class="section-header section-header__row reveal">
           <div>
             <p class="section-label">Портфолио</p>
-            <h2 class="section-title" id="gallery-title">Наши работы</h2>
+            <h2 class="section-title" id="gallery-title">Букеты, которые мы уже создали</h2>
             <p class="section-subtitle" style="margin-top: 1rem;">Каждый букет — авторская композиция, собранная флористом вручную</p>
           </div>
         </header>

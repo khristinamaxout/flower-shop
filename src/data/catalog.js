@@ -73,6 +73,7 @@ export const giftFinderOptions = {
     { id: 'date', label: 'Свидание' },
     { id: 'holiday', label: 'Праздник' },
     { id: 'thanks', label: 'Благодарность' },
+    { id: 'anniversary', label: 'Годовщина' },
     { id: 'no-reason', label: 'Без повода' },
   ],
   budget: [
@@ -127,7 +128,45 @@ export const scenarios = [
     alt: 'Букет без повода — просто порадовать',
     tags: ['no-reason', 'self', 'friend'],
   },
+  {
+    id: 'thanks-scenario',
+    title: 'Сказать «спасибо»',
+    image: images.scenarios.thanks,
+    alt: 'Букет благодарности',
+    tags: ['thanks', 'colleague', 'friend'],
+  },
+  {
+    id: 'amaze',
+    title: 'Удивить',
+    image: images.scenarios.amaze,
+    alt: 'Яркий сюрприз-букет',
+    tags: ['holiday', 'birthday', 'loved', 'no-reason'],
+  },
 ];
+
+export const budgetTiers = [
+  { id: '2000', label: 'до 2 000 ₽', max: 2000 },
+  { id: '3000', label: 'до 3 000 ₽', max: 3000 },
+  { id: '5000', label: 'до 5 000 ₽', max: 5000 },
+  { id: '10000', label: 'до 10 000 ₽', max: 10000 },
+];
+
+export const addOnOptions = [
+  { id: 'balloon', name: 'Шар', price: 500, image: images.categories.balloons },
+  { id: 'toy', name: 'Игрушка', price: 890, image: images.categories.toys },
+  { id: 'card', name: 'Открытка', price: 350, image: images.categories.souvenirs },
+  { id: 'souvenir', name: 'Сувенир', price: 650, image: images.categories.souvenirs },
+];
+
+export const seasonalCollection = {
+  id: 'late-summer',
+  title: 'Сейчас в цвету',
+  subtitle: 'Подсолнухи, ромашки и яркая зелень — коллекция позднего лета уже в ателье',
+  image: images.bouquets.spring,
+  alt: 'Сезонная коллекция позднего лета — Flora Atelier',
+  cta: 'Смотреть коллекцию',
+  tags: ['seasonal', 'holiday', 'birthday', 'no-reason'],
+};
 
 export const whyUsItems = [
   {
@@ -150,7 +189,16 @@ export const whyUsItems = [
     title: 'Индивидуальные композиции',
     description: 'Создаём уникальные букеты и подарочные наборы под любой повод.',
   },
+  {
+    title: 'Подарочная упаковка',
+    description: 'Крафт, матовая бумага и ленты — каждый букет упакован как подарок.',
+  },
 ];
+
+export const reviewAggregate = {
+  rating: 4.9,
+  count: 186,
+};
 
 export const reviews = [
   {
@@ -158,24 +206,28 @@ export const reviews = [
     name: 'Анна К.',
     text: 'Заказывала букет маме на юбилей — собрали именно то, что я описала по телефону. Доставили аккуратно, мама была в восторге.',
     date: 'Март 2026',
+    rating: 5,
   },
   {
     id: 2,
     name: 'Дмитрий В.',
     text: 'Первый раз заказывал цветы онлайн — переживал, что не попаду. Флорист помог подобрать, всё приехало свежее и красиво упаковано.',
     date: 'Февраль 2026',
+    rating: 5,
   },
   {
     id: 3,
     name: 'Елена М.',
     text: 'Беру здесь букеты регулярно. Нравится, что каждый раз композиция выглядит по-новому — не шаблон, а настоящая работа.',
     date: 'Январь 2026',
+    rating: 5,
   },
   {
     id: 4,
     name: 'Ольга С.',
     text: 'Срочно нужны были цветы к вечеру — успели за два часа. Качество на высоте, цена адекватная. Рекомендую.',
     date: 'Декабрь 2025',
+    rating: 5,
   },
 ];
 
@@ -212,4 +264,5 @@ export const siteConfig = {
   vk: 'https://vk.com/flora_atelier',
   address: 'г. Саратов, ул. Московская, 42',
   hours: 'Ежедневно с 9:00 до 21:00',
+  deliveryNote: 'Доставка по Саратову за 2–4 часа · Срочно — от 60 мин',
 };

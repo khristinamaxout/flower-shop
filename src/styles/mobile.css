@@ -1,0 +1,367 @@
+/**
+ * Mobile-first refinements — touch, safe areas, one-hand UX.
+ */
+
+/* Safe area for notched phones */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-height: 60px;
+    --mobile-bar-height: calc(60px + var(--safe-bottom));
+    --text-hero: clamp(2.25rem, 10vw, 3.25rem);
+    --text-3xl: clamp(1.75rem, 6vw, 2.25rem);
+    --text-4xl: clamp(2rem, 7vw, 2.75rem);
+  }
+
+  .container {
+    padding: 0 var(--space-md);
+  }
+
+  .section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .section-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .section-header__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .section-subtitle {
+    font-size: var(--text-base);
+  }
+
+  /* Hero — compact, readable */
+  .hero__title {
+    max-width: 100%;
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__subtitle {
+    font-size: var(--text-base);
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero__actions {
+    width: 100%;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+    min-height: 52px;
+    font-size: var(--text-base);
+  }
+
+  .hero__content {
+    padding: var(--space-2xl) 0 calc(var(--space-2xl) + var(--mobile-bar-height));
+  }
+
+  /* Buttons — 44px+ touch targets */
+  .btn {
+    min-height: 48px;
+    padding: 0.85rem 1.5rem;
+  }
+
+  .btn--sm {
+    min-height: 44px;
+    padding: 0.7rem 1rem;
+  }
+
+  /* Product cards — full bleed feel */
+  .products-grid {
+    gap: var(--space-2xl);
+  }
+
+  .product-card__name {
+    font-size: var(--text-lg);
+  }
+
+  .product-card__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .product-card__footer .btn {
+    width: 100%;
+  }
+
+  .product-card__addons-list {
+    gap: 6px;
+  }
+
+  .product-card__addon {
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  /* Gift finder — stacked, large taps */
+  .gift-finder-section__layout {
+    gap: var(--space-xl);
+  }
+
+  .gift-finder__steps {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .gift-finder__step-indicator {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+  }
+
+  .gift-finder__options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  .gift-finder__option {
+    min-height: 52px;
+    padding: var(--space-md);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  .gift-finder__actions {
+    flex-direction: column;
+  }
+
+  .gift-finder__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .gift-finder__results-grid {
+    gap: var(--space-lg);
+  }
+
+  /* Scenarios — taller cards, easier tap */
+  .scenarios-grid {
+    gap: var(--space-sm);
+  }
+
+  .scenario-card {
+    aspect-ratio: 3 / 4;
+    min-height: 160px;
+  }
+
+  .scenario-card__title {
+    font-size: var(--text-base);
+  }
+
+  /* Budget — full width cards */
+  .budget-card {
+    min-height: 88px;
+    padding: var(--space-lg);
+  }
+
+  .budget-card:active {
+    transform: scale(0.98);
+    background: var(--color-accent-soft);
+  }
+
+  /* Gift builder — horizontal scroll */
+  .gift-builder__visual {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    padding: var(--space-lg);
+    margin: 0 calc(-1 * var(--space-md));
+    scrollbar-width: none;
+  }
+
+  .gift-builder__visual::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gift-builder__item,
+  .gift-builder__plus {
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+
+  .gift-builder__item-icon {
+    width: 72px;
+    height: 72px;
+  }
+
+  .gift-builder__content .btn {
+    width: 100%;
+  }
+
+  /* Seasonal — editorial stack */
+  .seasonal-block__content {
+    padding: var(--space-2xl) var(--space-lg);
+  }
+
+  .seasonal-block__title {
+    font-size: var(--text-3xl);
+  }
+
+  .seasonal-block__content .btn {
+    width: 100%;
+  }
+
+  /* Gallery — tighter masonry */
+  .gallery {
+    column-gap: var(--space-xs);
+  }
+
+  .gallery__item {
+    margin-bottom: var(--space-xs);
+  }
+
+  /* Reviews — single column, readable */
+  .reviews-grid {
+    gap: var(--space-md);
+  }
+
+  .review-card {
+    padding: var(--space-lg);
+  }
+
+  .reviews-aggregate {
+    margin-top: var(--space-md);
+  }
+
+  /* Why us */
+  .why-item {
+    padding: var(--space-lg) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .why-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Delivery */
+  .delivery-grid {
+    gap: var(--space-lg);
+  }
+
+  /* Final CTA */
+  .final-cta {
+    padding: var(--space-4xl) 0 calc(var(--space-4xl) + var(--safe-bottom));
+  }
+
+  .final-cta__title {
+    font-size: var(--text-3xl);
+  }
+
+  .final-cta__actions {
+    width: 100%;
+    padding: 0 var(--space-md);
+  }
+
+  .final-cta__actions .btn {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  /* Modal — full screen sheet */
+  .modal-overlay {
+    align-items: flex-end;
+  }
+
+  .modal {
+    max-height: 92vh;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    padding: var(--space-xl) var(--space-md) calc(var(--space-xl) + var(--safe-bottom));
+  }
+
+  .modal-product {
+    flex-wrap: wrap;
+  }
+
+  .modal-product .btn {
+    width: 100%;
+    margin-top: var(--space-sm);
+  }
+
+  /* Toast — readable, wraps */
+  .toast {
+    white-space: normal;
+    text-align: center;
+    max-width: calc(100vw - 2rem);
+    left: var(--space-md);
+    right: var(--space-md);
+    transform: translateX(0) translateY(20px);
+  }
+
+  .toast.is-visible {
+    transform: translateX(0) translateY(0);
+  }
+
+  /* Mobile bar — safe area */
+  .mobile-bar {
+    height: var(--mobile-bar-height);
+    padding: var(--space-sm) var(--space-md) calc(var(--space-sm) + var(--safe-bottom));
+  }
+
+  .mobile-bar .btn {
+    min-height: 48px;
+    font-size: var(--text-sm);
+  }
+
+  /* Header compact */
+  .header__logo {
+    font-size: var(--text-lg);
+  }
+
+  .header__cta {
+    display: none;
+  }
+
+  /* Footer */
+  .footer {
+    padding-bottom: calc(var(--space-2xl) + var(--mobile-bar-height));
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    gap: var(--space-sm);
+    text-align: center;
+  }
+
+  /* Empty states */
+  .products-empty {
+    padding: var(--space-2xl) var(--space-md);
+    font-size: var(--text-sm);
+  }
+}
+
+@media (max-width: 380px) {
+  .gift-finder__options {
+    grid-template-columns: 1fr;
+  }
+
+  .categories-scroll .category-card {
+    flex: 0 0 80vw;
+  }
+}
+
+/* Landscape phone — reduce hero height */
+@media (max-width: 767px) and (orientation: landscape) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero__content {
+    padding-top: var(--space-xl);
+    padding-bottom: calc(var(--space-xl) + var(--mobile-bar-height));
+  }
+}

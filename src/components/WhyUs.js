@@ -6,7 +6,7 @@ export function renderWhyUs() {
       <div class="container container--narrow">
         <header class="section-header section-header--center reveal">
           <p class="section-label">Почему мы</p>
-          <h2 class="section-title" id="why-us-title">Flora Atelier</h2>
+          <h2 class="section-title" id="why-us-title">Почему нас выбирают</h2>
         </header>
 
         <div class="why-grid">

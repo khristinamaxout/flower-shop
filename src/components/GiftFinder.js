@@ -1,4 +1,4 @@
-import { giftFinderOptions } from '../data/catalog.js';
+import { giftFinderOptions, siteConfig } from '../data/catalog.js';
 import { filterByGiftFinder } from '../data/products.js';
 import { formatPrice } from '../utils/order.js';
 import { imgAttrs } from '../data/images.js';
@@ -15,7 +15,7 @@ export function renderGiftFinder() {
             <p class="section-label">Помощник</p>
             <h2 class="section-title" id="gift-finder-title">Не знаете, что подарить?</h2>
             <p class="section-subtitle">
-              Поможем подобрать цветы и подарок под повод, человека и ваш бюджет.
+              Подберём цветы и подарок под человека, повод и ваш бюджет.
             </p>
           </header>
 
@@ -139,7 +139,7 @@ export function initGiftFinder() {
       resultsGrid.innerHTML = `
         <div class="gift-finder__empty">
           <p>Точного совпадения нет — но мы подберём идеальный вариант.</p>
-          <a href="tel:+78452555012" class="btn btn--primary" style="margin-top: 1rem;">Связаться с флористом</a>
+          <a href="${siteConfig.phoneLink}" class="btn btn--primary" style="margin-top: 1rem;">Связаться с флористом</a>
         </div>
       `;
       return;

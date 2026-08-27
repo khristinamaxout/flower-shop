@@ -12,6 +12,7 @@ export function renderHeader() {
           <a href="#catalog">Каталог</a>
           <a href="#gift-finder">Подобрать подарок</a>
           <a href="#bestsellers">Хиты</a>
+          <a href="#seasonal">Сезон</a>
           <a href="#gallery">Работы</a>
           <a href="#delivery">Доставка</a>
         </nav>
@@ -32,6 +33,8 @@ export function renderHeader() {
         <a href="#gift-finder">Подобрать подарок</a>
         <a href="#bestsellers">Хиты продаж</a>
         <a href="#scenarios">По поводу</a>
+        <a href="#budget">По бюджету</a>
+        <a href="#seasonal">Сезон</a>
         <a href="#gallery">Наши работы</a>
         <a href="#delivery">Доставка</a>
         <a href="#reviews">Отзывы</a>

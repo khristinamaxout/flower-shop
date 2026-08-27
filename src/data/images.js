@@ -14,12 +14,16 @@ import {
   bouquet07,
   bouquet08,
   composition01,
+  composition02,
   single01,
   balloons01,
   potted01,
   toy01,
+  toy02,
   souvenir01,
+  souvenir02,
   painting01,
+  painting02,
 } from './image-data.js';
 
 export const images = {
@@ -48,11 +52,19 @@ export const images = {
     paintings: painting01,
   },
 
+  extras: {
+    composition02,
+    toy02,
+    souvenir02,
+    painting02,
+  },
+
   giftBuilder: {
     bouquet: bouquet01,
     balloons: balloons01,
     toy: toy01,
     card: souvenir01,
+    souvenir: souvenir02,
   },
 
   gallery: [
@@ -73,6 +85,8 @@ export const images = {
     date: bouquet02,
     colleague: composition01,
     surprise: bouquet05,
+    thanks: bouquet07,
+    amaze: bouquet06,
   },
 };
 

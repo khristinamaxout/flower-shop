@@ -3,8 +3,10 @@ import { renderHero } from './components/Hero.js';
 import { renderCategories, initCategories } from './components/Categories.js';
 import { renderGiftFinder, initGiftFinder } from './components/GiftFinder.js';
 import { renderBestsellers, initBestsellers, updateProductsGrid } from './components/Products.js';
-import { renderGiftBuilder } from './components/GiftBuilder.js';
 import { renderScenarios, initScenarios } from './components/Scenarios.js';
+import { renderBudgetSelector, initBudgetSelector } from './components/BudgetSelector.js';
+import { renderGiftBuilder, initGiftBuilder } from './components/GiftBuilder.js';
+import { renderSeasonalCollection, initSeasonalCollection } from './components/SeasonalCollection.js';
 import { renderWhyUs } from './components/WhyUs.js';
 import { renderGallery, initGallery } from './components/Gallery.js';
 import { renderReviews } from './components/Reviews.js';
@@ -12,21 +14,74 @@ import { renderDelivery } from './components/Delivery.js';
 import { renderFinalCta } from './components/FinalCta.js';
 import { renderFooter, renderMobileBar } from './components/Footer.js';
 
-import { scenarios, categories } from './data/catalog.js';
+import { scenarios, categories, budgetTiers, siteConfig } from './data/catalog.js';
 import { imgAttrs } from './data/images.js';
-import { filterByScenario, getByCategory, products, getProductById } from './data/products.js';
-import { createModal, renderModalProducts, initiateOrder } from './utils/order.js';
-import { initRevealAnimations, initHeroParallax, initHeaderScroll, initSmoothScroll, initMobileAnimations, initScrollAnimations } from './utils/animations.js';
+import {
+  filterByScenario,
+  getByCategory,
+  products,
+  getProductById,
+  filterByBudget,
+  getSeasonalProducts,
+  getBestsellers,
+} from './data/products.js';
+import {
+  createModal,
+  renderModalProducts,
+  initiateOrder,
+  initiateBundleOrder,
+} from './utils/order.js';
+import {
+  initRevealAnimations,
+  initHeroParallax,
+  initHeaderScroll,
+  initSmoothScroll,
+  initMobileAnimations,
+  initScrollAnimations,
+} from './utils/animations.js';
+import { injectSchema } from './utils/schema.js';
 
 const modal = createModal();
+const selectedAddOns = new Map();
 
 function initOrderDelegation() {
   document.addEventListener('click', (e) => {
+    const addonBtn = e.target.closest('[data-addon-id]');
+    if (addonBtn) {
+      const productId = addonBtn.dataset.productId;
+      const addonName = addonBtn.dataset.addonName;
+      addonBtn.classList.toggle('is-selected');
+
+      if (!selectedAddOns.has(productId)) selectedAddOns.set(productId, new Set());
+      const addons = selectedAddOns.get(productId);
+      if (addonBtn.classList.contains('is-selected')) {
+        addons.add(addonName);
+      } else {
+        addons.delete(addonName);
+      }
+      return;
+    }
+
     const btn = e.target.closest('[data-order-id]');
     if (!btn) return;
     const product = getProductById(btn.dataset.orderId);
-    if (product) initiateOrder(product.name);
+    if (product) {
+      const addons = selectedAddOns.has(product.id)
+        ? [...selectedAddOns.get(product.id)]
+        : [];
+      initiateOrder(product.name, addons);
+      selectedAddOns.delete(product.id);
+    }
   });
+}
+
+function scrollToSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    setTimeout(() => {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
 }
 
 function handleScenarioClick(scenarioId) {
@@ -48,26 +103,77 @@ function handleCategoryClick(categoryId) {
   if (titleEl && category) {
     titleEl.textContent = category.name;
   }
+
+  if (matched.length === 0) {
+    if (subtitleEl) {
+      subtitleEl.textContent = 'Скоро появится — позвоните, подберём индивидуально';
+    }
+    updateProductsGrid(
+      'bestsellers-grid',
+      [],
+      'В этой категории пока нет позиций. Позвоните — флорист подберёт идеальный вариант.'
+    );
+    scrollToSection('bestsellers');
+    modal.open(
+      category?.name || 'Каталог',
+      `<div class="gift-finder__empty">
+        <p>В категории «${category?.name}» скоро появятся позиции.</p>
+        <a href="${siteConfig.phoneLink}" class="btn btn--primary" style="margin-top: 1rem;">Связаться с флористом</a>
+      </div>`
+    );
+    return;
+  }
+
+  if (subtitleEl) {
+    subtitleEl.textContent = `${matched.length} ${pluralize(matched.length, 'позиция', 'позиции', 'позиций')} в категории`;
+  }
+
+  updateProductsGrid('bestsellers-grid', matched);
+  scrollToSection('bestsellers');
+
+  const html = renderModalProducts(matched);
+  modal.open(category?.name || 'Каталог', html);
+}
+
+function handleBudgetClick(maxBudget, budgetId) {
+  const tier = budgetTiers.find((t) => t.id === budgetId);
+  const matched = filterByBudget(maxBudget);
+
+  const titleEl = document.getElementById('bestsellers-title');
+  const subtitleEl = document.getElementById('bestsellers-subtitle');
+
+  if (titleEl) titleEl.textContent = `Букеты ${tier?.label || ''}`;
   if (subtitleEl) {
     subtitleEl.textContent = matched.length
-      ? `${matched.length} ${pluralize(matched.length, 'позиция', 'позиции', 'позиций')} в категории`
-      : 'Популярные букеты и композиции — проверенный выбор наших клиентов';
+      ? `${matched.length} ${pluralize(matched.length, 'вариант', 'варианта', 'вариантов')} в бюджете`
+      : 'Позвоните — подберём индивидуально';
   }
 
-  const displayProducts = matched.length ? matched : products.filter((p) => p.bestseller);
-  updateProductsGrid('bestsellers-grid', displayProducts);
+  updateProductsGrid('bestsellers-grid', matched.length ? matched : []);
+  scrollToSection('bestsellers');
 
-  const bestsellersSection = document.getElementById('bestsellers');
-  if (bestsellersSection) {
-    setTimeout(() => {
-      bestsellersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+  if (matched.length) {
+    modal.open(`Букеты ${tier?.label}`, renderModalProducts(matched));
+  } else {
+    modal.open(
+      `Букеты ${tier?.label}`,
+      `<div class="gift-finder__empty">
+        <p>Точного совпадения нет — но мы подберём идеальный вариант в вашем бюджете.</p>
+        <a href="${siteConfig.phoneLink}" class="btn btn--primary" style="margin-top: 1rem;">Связаться с флористом</a>
+      </div>`
+    );
   }
+}
 
-  if (matched.length > 0) {
-    const html = renderModalProducts(matched);
-    modal.open(category?.name || 'Каталог', html);
-  }
+function handleSeasonalClick() {
+  const matched = getSeasonalProducts();
+  modal.open('Сейчас в цвету', renderModalProducts(matched.length ? matched : getBestsellers(6)));
+  scrollToSection('bestsellers');
+  updateProductsGrid('bestsellers-grid', matched.length ? matched : getBestsellers(6));
+  const titleEl = document.getElementById('bestsellers-title');
+  const subtitleEl = document.getElementById('bestsellers-subtitle');
+  if (titleEl) titleEl.textContent = 'Сейчас в цвету';
+  if (subtitleEl) subtitleEl.textContent = 'Сезонная коллекция — свежие композиции этого месяца';
 }
 
 function pluralize(n, one, few, many) {
@@ -80,7 +186,7 @@ function pluralize(n, one, few, many) {
 }
 
 function handleGalleryViewAll() {
-  modal.open('Наши работы', `
+  modal.open('Букеты, которые мы уже создали', `
     <p style="color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 0.875rem;">
       Примеры реальных композиций нашего ателье. Для заказа похожего букета свяжитесь с флористом.
     </p>
@@ -108,13 +214,15 @@ function initApp() {
     <main id="main">
       ${renderHero()}
       ${renderCategories()}
-      ${renderGiftFinder()}
       ${renderBestsellers()}
-      ${renderGiftBuilder()}
+      ${renderGiftFinder()}
       ${renderScenarios()}
-      ${renderWhyUs()}
+      ${renderBudgetSelector()}
+      ${renderGiftBuilder()}
+      ${renderSeasonalCollection()}
       ${renderGallery()}
       ${renderReviews()}
+      ${renderWhyUs()}
       ${renderDelivery()}
       ${renderFinalCta()}
     </main>
@@ -127,6 +235,9 @@ function initApp() {
   initBestsellers();
   initCategories(handleCategoryClick);
   initScenarios(handleScenarioClick);
+  initBudgetSelector(handleBudgetClick);
+  initGiftBuilder(initiateBundleOrder);
+  initSeasonalCollection(handleSeasonalClick);
   initGallery(handleGalleryViewAll);
   initOrderDelegation();
 
@@ -136,6 +247,7 @@ function initApp() {
   initHeroParallax();
   initHeaderScroll();
   initSmoothScroll();
+  injectSchema();
 
   window.initScrollAnimations = initScrollAnimations;
 }

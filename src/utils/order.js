@@ -18,24 +18,36 @@ function ensureToast() {
  * Show order confirmation toast
  * Replace with real checkout flow when backend is connected
  */
-export function showOrderToast(productName) {
+export function showOrderToast(message) {
   const toast = ensureToast();
-  toast.textContent = productName
-    ? `«${productName}» — свяжитесь с нами для оформления: ${siteConfig.phone}`
-    : `Позвоните нам для оформления: ${siteConfig.phone}`;
+  toast.textContent = message || `Позвоните нам для оформления: ${siteConfig.phone}`;
   toast.classList.add('is-visible');
 
   clearTimeout(toast._timeout);
   toast._timeout = setTimeout(() => {
     toast.classList.remove('is-visible');
-  }, 4000);
+  }, 5000);
 }
 
 /**
  * Open phone or messenger for order
  */
-export function initiateOrder(productName) {
-  showOrderToast(productName);
+export function initiateOrder(productName, addOns = []) {
+  let message = productName
+    ? `«${productName}» — свяжитесь с нами для оформления: ${siteConfig.phone}`
+    : `Позвоните нам для оформления: ${siteConfig.phone}`;
+
+  if (addOns.length) {
+    message = `«${productName}» + ${addOns.join(', ')} — позвоните: ${siteConfig.phone}`;
+  }
+
+  showOrderToast(message);
+}
+
+export function initiateBundleOrder(bundleLabel, total) {
+  showOrderToast(
+    `Набор «${bundleLabel}» (${formatPrice(total)}) — позвоните для оформления: ${siteConfig.phone}`
+  );
 }
 
 /**
@@ -92,15 +104,20 @@ export function createModal() {
 /**
  * Render product list for modals
  */
-export function renderModalProducts(products, onOrder) {
+export function renderModalProducts(products) {
   if (!products.length) {
-    return `<p class="gift-finder__empty">Подборка скоро появится. Позвоните — поможем подобрать вручную.</p>`;
+    return `
+      <div class="gift-finder__empty">
+        <p>Подборка скоро появится. Позвоните — поможем подобрать вручную.</p>
+        <a href="${siteConfig.phoneLink}" class="btn btn--primary" style="margin-top: 1rem;">Связаться с флористом</a>
+      </div>
+    `;
   }
 
   return `
     <div class="modal-products">
       ${products
-        .slice(0, 6)
+        .slice(0, 8)
         .map(
           (p) => `
         <div class="modal-product">

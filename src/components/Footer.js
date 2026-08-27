@@ -57,7 +57,7 @@ export function renderMobileBar() {
   return `
     <div class="mobile-bar" role="navigation" aria-label="Быстрый заказ">
       <a href="${siteConfig.phoneLink}" class="btn btn--secondary">Позвонить</a>
-      <a href="#catalog" class="btn btn--primary btn--pulse">Выбрать букет</a>
+      <a href="${siteConfig.whatsapp}" class="btn btn--primary btn--pulse" target="_blank" rel="noopener">Заказать</a>
     </div>
   `;
 }

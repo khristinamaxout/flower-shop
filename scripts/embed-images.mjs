@@ -2,7 +2,7 @@
  * Embeds JPEG assets as base64 data URIs — guaranteed to load offline.
  * Run: npm run images
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -28,12 +28,16 @@ const files = {
   bouquet07: 'bouquet-07.jpg',
   bouquet08: 'bouquet-08.jpg',
   composition01: 'composition-01.jpg',
+  composition02: 'composition-02.jpg',
   single01: 'single-01.jpg',
   balloons01: 'balloons-01.jpg',
   potted01: 'potted-01.jpg',
   toy01: 'toy-01.jpg',
+  toy02: 'toy-02.jpg',
   souvenir01: 'souvenir-01.jpg',
+  souvenir02: 'souvenir-02.jpg',
   painting01: 'painting-01.jpg',
+  painting02: 'painting-02.jpg',
 };
 
 const encoded = {};
