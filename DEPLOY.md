@@ -2,8 +2,14 @@
 
 ## ⚠️ Почему белый экран
 
-На Netlify должны быть пути `./assets/...`  
-Если в `index.html` написано `/flower-shop/assets/...` — это **неправильная** сборка, сайт будет белым.
+На Netlify **нет папки assets** — JS/CSS не загружаются (404).
+
+Частые причины:
+- загрузили только `index.html`, без папки `assets/`
+- загрузили папку `dist` целиком, а не **содержимое** dist
+- загрузили весь проект вместо **`flower-shop-site.zip`**
+
+В `index.html` должны быть пути **`./assets/...`** (не `/flower-shop/assets/`).
 
 ---
 
@@ -39,7 +45,20 @@ Netlify → **Import from Git** → **flower-shop** → Deploy
 
 ---
 
-## GitHub Pages
+## GitHub Pages (рекомендуется)
 
-https://khristinamaxout.github.io/flower-shop/  
-(репозиторий Public + Settings → Pages → GitHub Actions)
+**Ссылка:** https://khristinamaxout.github.io/flower-shop/
+
+### Автодеплой (уже настроен)
+
+При push в `main` GitHub Actions собирает и публикует сайт (`.github/workflows/deploy-pages.yml`).
+
+### Один раз включить Pages (если сайт 404)
+
+1. Откройте: https://github.com/khristinamaxout/flower-shop/settings/pages
+2. **Build and deployment** → Source: **GitHub Actions**
+3. Подождите 1–2 мин — деплой запустится автоматически после push
+
+Или вручную: **Actions** → **Deploy to GitHub Pages** → **Run workflow**
+
+---

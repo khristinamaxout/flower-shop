@@ -16,6 +16,12 @@ if (!existsSync(indexPath)) {
 
 const html = readFileSync(indexPath, 'utf8');
 
+if (!html.includes('./assets/')) {
+  console.error('ERROR: dist must use relative paths ./assets/ for Netlify');
+  console.error('Found in index.html:', html.match(/src="[^"]+"/)?.[0] || 'unknown');
+  process.exit(1);
+}
+
 if (html.includes('/flower-shop/') && process.env.GITHUB_PAGES !== 'true') {
   console.error('ERROR: dist built for GitHub Pages, not Netlify!');
   console.error('Run: npm run build:netlify');

@@ -33,6 +33,12 @@ jobs:
       - name: Build
         run: npm run build:pages
 
+      - name: Verify GitHub Pages paths
+        run: |
+          grep -q '/flower-shop/assets/' dist/index.html
+          ls dist/assets/*.js dist/assets/*.css
+          echo "OK — paths correct for GitHub Pages"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
