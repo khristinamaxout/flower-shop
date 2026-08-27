@@ -5,5 +5,6 @@ dist/
 .env
 .env.*
 build-log.txt
+flower-shop-site.zip
 temp-check.js
 public/images/

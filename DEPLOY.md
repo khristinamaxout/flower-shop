@@ -1,43 +1,45 @@
 # Как открыть сайт на телефоне
 
-## Быстро (2 минуты) — ваш Netlify
+## ⚠️ Почему белый экран
 
-Сайт был пустым, потому что загружена **неправильная** папка `dist`. Сейчас на компьютере уже лежит **исправленная** сборка.
-
-1. Откройте в браузере: **https://app.netlify.com** → ваш сайт **idyllic-melomakarona**
-2. Вкладка **Deploys** (Деплои)
-3. Перетащите в область «Drag and drop» папку:
-
-   `c:\Users\User\Desktop\Мой бизнес\Сайты\Цветочный магазин\dist`
-
-4. Подождите 30 секунд → **Open production deploy**
-
-Ссылка останется: **https://idyllic-melomakarona-f46eb3.netlify.app**
+На Netlify должны быть пути `./assets/...`  
+Если в `index.html` написано `/flower-shop/assets/...` — это **неправильная** сборка, сайт будет белым.
 
 ---
 
-## Навсегда — Netlify + GitHub (автообновление)
+## Правильная загрузка (1 минута)
 
-1. **https://app.netlify.com** → **Add new site** → **Import an existing project**
-2. **GitHub** → репозиторий **flower-shop**
-3. Netlify сам подставит настройки из `netlify.toml` → **Deploy**
-4. Каждый push в GitHub будет обновлять сайт
+На компьютере уже создан архив:
 
----
+**`c:\Users\User\Desktop\Мой бизнес\Сайты\Цветочный магазин\flower-shop-site.zip`**
 
-## Альтернатива — GitHub Pages
+1. **https://app.netlify.com** → сайт **idyllic-melomakarona** → **Deploys**
+2. Перетащите файл **`flower-shop-site.zip`** (не папку dist, не весь проект!)
+3. Дождитесь **Published** → откройте сайт
 
-1. Репозиторий должен быть **Public** (Настройки → Visibility)
-2. **Settings** → **Pages** → Source: **GitHub Actions**
-3. Ссылка: **https://khristinamaxout.github.io/flower-shop/**
+**Ссылка:** https://idyllic-melomakarona-f46eb3.netlify.app
 
 ---
 
-## Пересобрать dist перед загрузкой
+## Пересобрать архив (если нужно снова)
 
 ```powershell
 cd "c:\Users\User\Desktop\Мой бизнес\Сайты\Цветочный магазин"
-npm run build:netlify
+npm run pack:netlify
 ```
 
-Потом снова перетащите папку `dist` на Netlify.
+Появится новый `flower-shop-site.zip` — загрузите его на Netlify.
+
+---
+
+## Автодеплой через GitHub
+
+Netlify → **Import from Git** → **flower-shop** → Deploy  
+(настройки уже в `netlify.toml`, соберёт правильную версию сам)
+
+---
+
+## GitHub Pages
+
+https://khristinamaxout.github.io/flower-shop/  
+(репозиторий Public + Settings → Pages → GitHub Actions)

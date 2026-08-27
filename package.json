@@ -7,7 +7,8 @@
     "dev": "node scripts/verify-images.mjs && vite",
     "build": "vite build",
     "build:pages": "cross-env GITHUB_PAGES=true vite build",
-    "build:netlify": "vite build",
+    "build:netlify": "vite build && node scripts/verify-dist.mjs",
+    "pack:netlify": "npm run build:netlify && node scripts/pack-netlify.mjs",
     "preview": "vite preview",
     "images": "node scripts/generate-images.mjs && node scripts/embed-images.mjs",
     "prebuild": "node scripts/verify-images.mjs --build"
