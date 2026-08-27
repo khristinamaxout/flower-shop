@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "node scripts/verify-images.mjs && vite",
     "build": "vite build",
+    "build:pages": "cross-env GITHUB_PAGES=true vite build",
+    "build:netlify": "vite build",
     "preview": "vite preview",
     "images": "node scripts/generate-images.mjs && node scripts/embed-images.mjs",
     "prebuild": "node scripts/verify-images.mjs --build"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "sharp": "^0.35.4",
     "vite": "^6.0.0"
   }

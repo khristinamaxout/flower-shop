@@ -1,12 +1,7 @@
-# Optional: connect repo at https://app.netlify.com for auto-deploy
+# Netlify — подключается к GitHub, собирает сам
 [build]
-  command = "npm run build"
+  command = "npm run build:netlify"
   publish = "dist"
 
 [build.environment]
-  GITHUB_PAGES = "false"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  NODE_VERSION = "20"
