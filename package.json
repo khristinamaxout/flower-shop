@@ -1,0 +1,17 @@
+{
+  "name": "flower-shop-saratov",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/verify-images.mjs && vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "images": "node scripts/generate-images.mjs && node scripts/embed-images.mjs",
+    "prebuild": "node scripts/verify-images.mjs --build"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4",
+    "vite": "^6.0.0"
+  }
+}
