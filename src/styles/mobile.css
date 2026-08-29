@@ -45,29 +45,18 @@
     font-size: var(--text-base);
   }
 
-  /* Hero — compact, readable */
-  .hero__title {
-    max-width: 100%;
-    margin-bottom: var(--space-md);
+  /* Hero — poppy layout */
+  .hero--poppy .hero__title {
+    font-size: clamp(2.625rem, 11vw, 3.25rem);
   }
 
-  .hero__subtitle {
+  .hero--poppy .hero__subtitle {
     font-size: var(--text-base);
-    margin-bottom: var(--space-xl);
   }
 
-  .hero__actions {
-    width: 100%;
-  }
-
-  .hero__actions .btn {
+  .hero--poppy .hero__actions .btn {
     width: 100%;
     min-height: 52px;
-    font-size: var(--text-base);
-  }
-
-  .hero__content {
-    padding: var(--space-2xl) 0 calc(var(--space-2xl) + var(--mobile-bar-height));
   }
 
   /* Buttons — 44px+ touch targets */

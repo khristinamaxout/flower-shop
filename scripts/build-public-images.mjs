@@ -11,13 +11,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, '../public/images');
 
 const brand = {
-  ivory: '#F4EFE6',
-  warmBeige: '#E8DFD2',
-  charcoal: '#24221F',
-  botanical: '#69745D',
-  dustyRose: '#C4A494',
+  ivory: '#F5F0E7',
+  warmBeige: '#E9E0D3',
+  charcoal: '#26231F',
+  botanical: '#69735F',
+  dustyRose: '#B88C83',
   blush: '#E8D5CF',
-  cream: '#F5F0EB',
+  cream: '#F5F0E7',
   mutedGreen: '#8A9580',
 };
 
@@ -68,6 +68,27 @@ function stem(x, y1, y2) {
   return `<path d="M ${x} ${y1} Q ${x + 6} ${(y1 + y2) / 2} ${x} ${y2}" stroke="${brand.botanical}" stroke-width="2.5" fill="none" opacity="0.5"/>`;
 }
 
+function filmGrain(w, h) {
+  return `<defs>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0" result="mono"/>
+      <feBlend in="SourceGraphic" in2="mono" mode="soft-light"/>
+    </filter>
+  </defs>
+  <rect width="${w}" height="${h}" filter="url(#grain)" opacity="0.06"/>`;
+}
+
+function softLight(w, h) {
+  return `<defs>
+    <radialGradient id="softLight" cx="35%" cy="25%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="${w}" height="${h}" fill="url(#softLight)"/>`;
+}
+
 function bouquetScene(w, h, { roses, bg1, bg2, accent = brand.botanical, leaves = true }) {
   let florals = roses.map(([x, y, r, color]) => rose(x * w, y * h, r, color)).join('');
   if (leaves) {
@@ -75,12 +96,15 @@ function bouquetScene(w, h, { roses, bg1, bg2, accent = brand.botanical, leaves 
     florals += leaf(w * 0.78, h * 0.66, 0.85, 32);
     florals += leaf(w * 0.52, h * 0.76, 0.65, 8, accent);
     florals += stem(w * 0.48, h * 0.55, h * 0.82);
+    florals += stem(w * 0.54, h * 0.58, h * 0.84);
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
     ${bgGradient(w, h, bg1, bg2)}
-    ${bokeh(w, h)}
+    ${bokeh(w, h, 14, 0.1)}
     ${florals}
-    ${vignette(w, h, 0.28)}
+    ${softLight(w, h)}
+    ${vignette(w, h, 0.32)}
+    ${filmGrain(w, h)}
   </svg>`;
 }
 
@@ -116,10 +140,10 @@ const bouquetVariants = [
 
 function heroScene(w, h) {
   return bouquetScene(w, h, {
-    bg1: '#3A3834',
-    bg2: '#24221F',
+    bg1: '#EDE6DC',
+    bg2: '#DDD4C8',
     roses: [
-      [0.28, 0.52, 52, brand.cream],
+      [0.28, 0.52, 52, brand.dustyRose],
       [0.42, 0.44, 58, brand.blush],
       [0.55, 0.48, 54, '#F0EBE4'],
       [0.68, 0.44, 56, brand.dustyRose],
@@ -237,6 +261,18 @@ const files = [
   { name: 'souvenir-02.webp', w: 800, h: 1000, fn: () => categoryScene(800, 1000, 'souvenir') },
   { name: 'painting-01.webp', w: 800, h: 1000, fn: () => categoryScene(800, 1000, 'painting') },
   { name: 'painting-02.webp', w: 800, h: 1000, fn: () => categoryScene(800, 1000, 'painting') },
+  ...bouquetVariants.slice(0, 4).map((v, i) => ({
+    name: `bouquet-${String(i + 9).padStart(2, '0')}.webp`,
+    w: 800, h: 1000,
+    fn: () => bouquetScene(800, 1000, { ...v, accent: brand.dustyRose }),
+  })),
+  { name: 'candle-01.webp', w: 800, h: 1000, fn: () => giftBoxScene(800, 1000) },
+  { name: 'sweets-01.webp', w: 800, h: 1000, fn: () => categoryScene(800, 1000, 'souvenir') },
+  ...bouquetVariants.slice(0, 6).map((v, i) => ({
+    name: `social-${String(i + 1).padStart(2, '0')}.webp`,
+    w: 600, h: 600,
+    fn: () => bouquetScene(600, 600, { ...v, accent: brand.mutedGreen }),
+  })),
 ];
 
 await mkdir(outDir, { recursive: true });

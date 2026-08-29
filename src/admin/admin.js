@@ -19,11 +19,15 @@ let editingId = null;
 function imageUrl(filename) {
   if (!filename) return '';
   if (filename.startsWith('http') || filename.startsWith('/')) return filename;
-  return `${base}images/${filename}`;
+  return `${base}references/items/${filename}`;
 }
 
 function resolveImage(product) {
   const src = product.image || '';
+  if (src.includes('/references/items/')) {
+    const name = src.split('/references/items/').pop();
+    return imageUrl(name);
+  }
   if (src.includes('/images/')) {
     const name = src.split('/images/').pop();
     return imageUrl(name);
@@ -33,8 +37,8 @@ function resolveImage(product) {
 
 function filenameFromProduct(product) {
   const src = product.image || '';
-  const match = src.match(/images\/([^/?#]+)/);
-  return match ? match[1] : 'bouquet-01.webp';
+  const match = src.match(/(?:references\/items|images)\/([^/?#]+)/);
+  return match ? match[1] : 'pink-01.webp';
 }
 
 function showToast(message) {
@@ -147,12 +151,24 @@ function renderForm(product = null) {
           <input id="oldPrice" name="oldPrice" type="number" min="0" value="${p.oldPrice ?? ''}">
         </div>
         <div class="form-field form-grid__full">
-          <label for="description">Описание</label>
+          <label for="tagline">Короткое описание</label>
+          <input id="tagline" name="tagline" value="${p.tagline || ''}">
+        </div>
+        <div class="form-field form-grid__full">
+          <label for="description">Полное описание</label>
           <textarea id="description" name="description">${p.description || ''}</textarea>
         </div>
         <div class="form-field form-grid__full">
           <label for="emotional">Эмоциональный текст</label>
           <textarea id="emotional" name="emotional">${p.emotional || ''}</textarea>
+        </div>
+        <div class="form-field">
+          <label for="size">Размер</label>
+          <input id="size" name="size" value="${p.size || ''}" placeholder="Средний · ~45 см">
+        </div>
+        <div class="form-field">
+          <label for="composition">Состав</label>
+          <input id="composition" name="composition" value="${p.composition || ''}" placeholder="Розы, эвкалипт, зелень">
         </div>
         <div class="form-field">
           <label for="image">Фотография</label>
@@ -161,13 +177,12 @@ function renderForm(product = null) {
           </select>
         </div>
         <div class="form-field">
-          <label for="badge">Badge</label>
+          <label for="badge">Метка</label>
           <select id="badge" name="badge">
             ${badgeOptions.map((b) => `<option value="${b.id}" ${(p.badge || '') === b.id ? 'selected' : ''}>${b.label}</option>`).join('')}
           </select>
         </div>
         <div class="form-field form-grid__full form-checks">
-          <label><input type="checkbox" name="bestseller" ${p.bestseller ? 'checked' : ''}> Хит продаж</label>
           <label><input type="checkbox" name="seasonal" ${p.seasonal ? 'checked' : ''}> Сезонный</label>
           <label><input type="checkbox" name="available" ${p.available !== false ? 'checked' : ''}> Показывать на сайте</label>
           <label><input type="checkbox" name="addOns" ${p.addOns ? 'checked' : ''}> Доп. товары</label>
@@ -253,13 +268,16 @@ function bindEvents() {
       name: fd.get('name').trim(),
       price: Number(fd.get('price')),
       oldPrice: fd.get('oldPrice') ? Number(fd.get('oldPrice')) : null,
+      tagline: fd.get('tagline').trim(),
       description: fd.get('description').trim(),
       emotional: fd.get('emotional').trim(),
+      size: fd.get('size').trim(),
+      composition: fd.get('composition').trim(),
       category: fd.get('category'),
       badge: fd.get('badge') || null,
       image: imageUrl(imageName),
       alt: `${fd.get('name')} — Flora Atelier`,
-      bestseller: fd.get('bestseller') === 'on',
+      bestseller: fd.get('badge') === 'hit',
       seasonal: fd.get('seasonal') === 'on',
       available: fd.get('available') === 'on',
       addOns: fd.get('addOns') === 'on',

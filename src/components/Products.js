@@ -6,31 +6,24 @@ import { imgAttrs } from '../data/images.js';
 export function renderProducts(products, options = {}) {
   const {
     title = 'Выбирают чаще всего',
-    subtitle = 'Когда не знаете с чего начать — начните с проверенного',
-    id = 'bestsellers',
-    showAllLink = false,
+    subtitle = 'Каждый букет — маленькая история',
+    id = 'products',
     emptyMessage = null,
   } = options;
 
   const gridContent = products.length
     ? products.map((p, i) => renderProductCard(p, i)).join('')
-    : renderEmptyState(emptyMessage);
+    : `<div class="products-empty"><p>${emptyMessage || 'Скоро появятся новые позиции — позвоните, подберём индивидуально.'}</p></div>`;
 
   return `
     <section class="section" id="${id}" aria-labelledby="${id}-title">
       <div class="container">
-        <header class="section-header section-header__row reveal">
-          <div>
-            <p class="section-label">Хиты продаж</p>
-            <h2 class="section-title" id="${id}-title">${title}</h2>
-            ${subtitle ? `<p class="section-subtitle" id="${id}-subtitle" style="margin-top: 1rem;">${subtitle}</p>` : ''}
-          </div>
-          ${showAllLink ? `<a href="#catalog" class="btn btn--ghost">Весь каталог →</a>` : ''}
+        <header class="section-header reveal">
+          <p class="section-label">Каталог</p>
+          <h2 class="section-title" id="${id}-title">${title}</h2>
+          <p class="section-subtitle" id="${id}-subtitle">${subtitle}</p>
         </header>
-
-        <div class="products-editorial" id="${id}-grid">
-          ${gridContent}
-        </div>
+        <div class="products-editorial" id="${id}-grid">${gridContent}</div>
       </div>
     </section>
   `;
@@ -41,103 +34,62 @@ function renderBadge(badge) {
   return `<span class="product-card__badge product-card__badge--${badge}">${badgeLabels[badge]}</span>`;
 }
 
-function renderAddOns(product) {
-  if (!product.addOns) return '';
-
-  return `
-    <div class="product-card__addons">
-      <p class="product-card__addons-label">Добавить к заказу</p>
-      <div class="product-card__addons-list">
-        ${addOnOptions
-          .slice(0, 4)
-          .map(
-            (addon) => `
-          <button
-            class="product-card__addon"
-            type="button"
-            data-addon-id="${addon.id}"
-            data-addon-name="${addon.name}"
-            data-addon-price="${addon.price}"
-            data-product-id="${product.id}"
-            aria-label="Добавить ${addon.name}"
-          >+ ${addon.name}</button>
-        `
-          )
-          .join('')}
-      </div>
-    </div>
-  `;
-}
-
 export function renderProductCard(product, index = 0) {
-  const delay = index * 0.07;
+  const delay = index * 0.06;
   const priceHtml = product.oldPrice
     ? `<span class="product-card__price-old">${formatPrice(product.oldPrice)}</span><span class="product-card__price">${formatPrice(product.price)}</span>`
     : `<span class="product-card__price">${formatPrice(product.price)}</span>`;
 
-  const emotional = product.emotional
-    ? `<p class="product-card__emotional">${product.emotional}</p>`
-    : '';
-
   return `
-    <article class="product-card mobile-slide-up image-reveal" data-product-id="${product.id}" style="--anim-delay: ${delay}s">
-      <div class="product-card__image">
-        ${renderBadge(product.badge)}
-        <img ${imgAttrs(product.image, product.alt, 400, 500)}>
-      </div>
-      <div class="product-card__info">
-        <h3 class="product-card__name">${product.name}</h3>
-        ${emotional}
-        <p class="product-card__desc">${product.description}</p>
-        ${renderAddOns(product)}
-        <div class="product-card__footer">
-          <div class="product-card__pricing">${priceHtml}</div>
-          <button class="btn btn--primary btn--sm" data-order-id="${product.id}">Заказать</button>
+    <article class="product-card mobile-slide-up image-reveal" data-product-id="${product.id}" style="--anim-delay:${delay}s">
+      <button type="button" class="product-card__link" data-open-product="${product.id}" aria-label="Подробнее о ${product.name}">
+        <div class="product-card__image">
+          ${renderBadge(product.badge)}
+          <img ${imgAttrs(product.image, product.alt, 400, 500)}>
         </div>
-      </div>
+        <div class="product-card__info">
+          <h3 class="product-card__name">${product.name}</h3>
+          ${product.tagline ? `<p class="product-card__tagline">${product.tagline}</p>` : ''}
+          <div class="product-card__footer">
+            <div class="product-card__pricing">${priceHtml}</div>
+            <span class="product-card__more">Подробнее →</span>
+          </div>
+        </div>
+      </button>
     </article>
   `;
 }
 
-function renderEmptyState(message) {
-  return `
-    <div class="products-empty">
-      <p>${message || 'В этой категории скоро появятся позиции — позвоните, подберём индивидуально.'}</p>
-    </div>
-  `;
-}
-
 export function renderBestsellers() {
-  const products = getBestsellers(8);
-  return renderProducts(products, {
+  return renderProducts(getBestsellers(8), {
     title: 'Выбирают чаще всего',
-    subtitle: 'Когда не знаете с чего начать — начните с проверенного',
-    id: 'bestsellers',
+    subtitle: 'Каждый букет — маленькая история',
+    id: 'products',
   });
-}
-
-export function initBestsellers() {
-  /* Order and add-on buttons handled via delegation in main.js */
 }
 
 export function updateProductsGrid(gridId, products, emptyMessage = null) {
   const grid = document.getElementById(gridId);
   if (!grid) return;
-
   grid.innerHTML = products.length
     ? products.map((p, i) => renderProductCard(p, i)).join('')
-    : renderEmptyState(emptyMessage);
-
-  if (window.initScrollAnimations) {
-    window.initScrollAnimations(grid);
-  }
+    : `<div class="products-empty"><p>${emptyMessage || 'В этой подборке пока нет позиций.'}</p></div>`;
+  window.initScrollAnimations?.(grid);
 }
 
-export function resetBestsellersTitle() {
-  const titleEl = document.getElementById('bestsellers-title');
-  const subtitleEl = document.getElementById('bestsellers-subtitle');
-  if (titleEl) titleEl.textContent = 'Выбирают чаще всего';
-  if (subtitleEl) {
-    subtitleEl.textContent = 'Когда не знаете с чего начать — начните с проверенного';
-  }
+export function resetProductsTitle() {
+  const t = document.getElementById('products-title');
+  const s = document.getElementById('products-subtitle');
+  if (t) t.textContent = 'Выбирают чаще всего';
+  if (s) s.textContent = 'Каждый букет — маленькая история';
+}
+
+export function initProducts(onProductOpen) {
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-open-product]');
+    if (btn) {
+      e.preventDefault();
+      onProductOpen?.(btn.dataset.openProduct);
+    }
+  });
 }

@@ -1,4 +1,5 @@
-import { siteConfig } from '../data/catalog.js';
+import { addOnOptions, siteConfig } from '../data/catalog.js';
+import { badgeLabels } from '../data/products.js';
 import { imgAttrs } from '../data/images.js';
 
 let toastEl = null;
@@ -14,57 +15,31 @@ function ensureToast() {
   return toastEl;
 }
 
-/**
- * Show order confirmation toast
- * Replace with real checkout flow when backend is connected
- */
 export function showOrderToast(message) {
   const toast = ensureToast();
-  toast.textContent = message || `Позвоните нам для оформления: ${siteConfig.phone}`;
+  toast.textContent = message || `Позвоните для оформления: ${siteConfig.phone}`;
   toast.classList.add('is-visible');
-
   clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.classList.remove('is-visible');
-  }, 5000);
+  toast._timeout = setTimeout(() => toast.classList.remove('is-visible'), 5000);
 }
 
-/**
- * Open phone or messenger for order
- */
 export function initiateOrder(productName, addOns = []) {
   let message = productName
-    ? `«${productName}» — свяжитесь с нами для оформления: ${siteConfig.phone}`
-    : `Позвоните нам для оформления: ${siteConfig.phone}`;
-
-  if (addOns.length) {
-    message = `«${productName}» + ${addOns.join(', ')} — позвоните: ${siteConfig.phone}`;
-  }
-
+    ? `«${productName}» — позвоните для оформления: ${siteConfig.phone}`
+    : `Позвоните для оформления: ${siteConfig.phone}`;
+  if (addOns.length) message = `«${productName}» + ${addOns.join(', ')} — ${siteConfig.phone}`;
   showOrderToast(message);
 }
 
 export function initiateBundleOrder(bundleLabel, total) {
-  showOrderToast(
-    `Набор «${bundleLabel}» (${formatPrice(total)}) — позвоните для оформления: ${siteConfig.phone}`
-  );
+  showOrderToast(`Набор «${bundleLabel}» (${formatPrice(total)}) — ${siteConfig.phone}`);
 }
 
-/**
- * Contact florist
- */
-export function contactFlorist() {
-  window.location.href = siteConfig.phoneLink;
-}
-
-/**
- * Modal manager for product selections
- */
 export function createModal() {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
-    <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal modal--wide" role="dialog" aria-modal="true">
       <div class="modal__header">
         <h3 class="section-title" id="modal-title"></h3>
         <button class="modal__close" aria-label="Закрыть">&times;</button>
@@ -72,7 +47,6 @@ export function createModal() {
       <div class="modal__body" id="modal-body"></div>
     </div>
   `;
-
   document.body.appendChild(overlay);
 
   const close = () => {
@@ -80,12 +54,8 @@ export function createModal() {
     document.body.style.overflow = '';
   };
 
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) close();
-  });
-
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   overlay.querySelector('.modal__close').addEventListener('click', close);
-
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
   });
@@ -101,56 +71,58 @@ export function createModal() {
   };
 }
 
-/**
- * Render product list for modals
- */
-export function renderModalProducts(products) {
-  if (!products.length) {
-    return `
-      <div class="gift-finder__empty">
-        <p>Подборка скоро появится. Позвоните — поможем подобрать вручную.</p>
-        <a href="${siteConfig.phoneLink}" class="btn btn--primary" style="margin-top: 1rem;">Связаться с флористом</a>
-      </div>
-    `;
-  }
+export function renderProductDetail(product) {
+  const badge = product.badge && badgeLabels[product.badge]
+    ? `<span class="product-detail__badge">${badgeLabels[product.badge]}</span>` : '';
+  const priceHtml = product.oldPrice
+    ? `<span class="product-detail__price-old">${formatPrice(product.oldPrice)}</span><span class="product-detail__price">${formatPrice(product.price)}</span>`
+    : `<span class="product-detail__price">${formatPrice(product.price)}</span>`;
 
   return `
-    <div class="modal-products">
-      ${products
-        .slice(0, 8)
-        .map(
-          (p) => `
-        <div class="modal-product">
-          <div class="modal-product__image">
-            <img ${imgAttrs(p.image, p.alt, 72, 90)}>
+    <article class="product-detail">
+      <div class="product-detail__image">
+        <img ${imgAttrs(product.image, product.alt, 600, 750)}>
+      </div>
+      <div class="product-detail__info">
+        ${badge}
+        <h2 class="product-detail__name">${product.name}</h2>
+        ${product.tagline ? `<p class="product-detail__tagline">${product.tagline}</p>` : ''}
+        ${product.emotional ? `<p class="product-detail__emotional">${product.emotional}</p>` : ''}
+        <div class="product-detail__pricing">${priceHtml}</div>
+        <p class="product-detail__desc">${product.description}</p>
+        <dl class="product-detail__meta">
+          <div><dt>Размер</dt><dd>${product.size || 'Стандартный'}</dd></div>
+          <div><dt>Состав</dt><dd>${product.composition || product.description}</dd></div>
+        </dl>
+        <div class="product-detail__addons">
+          <p class="product-detail__addons-label">Добавить к заказу</p>
+          <div class="product-detail__addons-list">
+            ${addOnOptions.map((a) => `
+              <button type="button" class="product-detail__addon" data-addon-name="${a.name}" data-product-id="${product.id}">+ ${a.name} · ${formatPrice(a.price)}</button>
+            `).join('')}
           </div>
-          <div class="modal-product__info">
-            <div class="modal-product__name">${p.name}</div>
-            <div class="modal-product__desc">${p.description}</div>
-            <div class="modal-product__price">${formatPrice(p.price)}</div>
-          </div>
-          <button class="btn btn--primary btn--sm" data-order-id="${p.id}">Заказать</button>
         </div>
-      `
-        )
-        .join('')}
-    </div>
+        <button class="btn btn--primary btn--lg btn--full" data-order-id="${product.id}">Заказать букет</button>
+      </div>
+    </article>
   `;
 }
 
-export function formatPrice(price) {
-  return new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    maximumFractionDigits: 0,
-  }).format(price);
+export function renderModalProducts(products) {
+  if (!products.length) {
+    return `<div class="gift-finder__empty"><p>Подборка скоро появится. Позвоните — поможем подобрать.</p><a href="${siteConfig.phoneLink}" class="btn btn--primary" style="margin-top:1rem">Связаться с флористом</a></div>`;
+  }
+  return `<div class="modal-products">${products.slice(0, 6).map((p) => `
+    <button type="button" class="modal-product" data-open-product="${p.id}">
+      <div class="modal-product__image"><img ${imgAttrs(p.image, p.alt, 72, 90)}></div>
+      <div class="modal-product__info">
+        <div class="modal-product__name">${p.name}</div>
+        <div class="modal-product__price">${formatPrice(p.price)}</div>
+      </div>
+    </button>
+  `).join('')}</div>`;
 }
 
-export function bindOrderButtons(container, products, onOrder = initiateOrder) {
-  container.querySelectorAll('[data-order-id]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const product = products.find((p) => p.id === btn.dataset.orderId);
-      if (product) onOrder(product.name);
-    });
-  });
+export function formatPrice(price) {
+  return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(price);
 }

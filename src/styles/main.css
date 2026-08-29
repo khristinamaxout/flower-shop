@@ -1,24 +1,30 @@
-/* Design tokens — Modern Botanical × Editorial Luxury */
+/* Design tokens — нежные розово-ванильные тона */
 :root {
-  --ivory: #F4EFE6;
-  --warm-beige: #E8DFD2;
-  --charcoal: #24221F;
-  --botanical: #69745D;
-  --dusty-rose: #C4A494;
+  --vanilla: #FFF9F5;
+  --ivory: #FFF5F0;
+  --warm-beige: #F8EBE6;
+  --pink-blush: #F5DDD6;
+  --pink-soft: #EFB8AD;
+  --pink-coral: #E8958A;
+  --pink-deep: #D97B6E;
+  --charcoal: #4A3F3C;
+  --botanical: #A8897A;
+  --dusty-rose: #C9958A;
+  --dark: #3D2F2C;
 
-  --color-bg: var(--ivory);
+  --color-bg: var(--vanilla);
   --color-bg-alt: var(--warm-beige);
-  --color-bg-dark: var(--charcoal);
+  --color-bg-dark: var(--dark);
   --color-text: var(--charcoal);
-  --color-text-muted: #5C5852;
-  --color-text-light: #8A847C;
-  --color-accent: var(--botanical);
-  --color-accent-hover: #56604C;
-  --color-accent-secondary: var(--dusty-rose);
-  --color-accent-soft: rgba(105, 116, 93, 0.1);
-  --color-highlight: var(--dusty-rose);
-  --color-border: rgba(36, 34, 31, 0.12);
-  --color-border-light: rgba(36, 34, 31, 0.06);
+  --color-text-muted: #8B7570;
+  --color-text-light: #B09A94;
+  --color-accent: var(--pink-coral);
+  --color-accent-hover: var(--pink-deep);
+  --color-accent-secondary: var(--pink-soft);
+  --color-accent-soft: rgba(232, 149, 138, 0.14);
+  --color-highlight: var(--pink-coral);
+  --color-border: rgba(74, 63, 60, 0.1);
+  --color-border-light: rgba(74, 63, 60, 0.05);
   --color-white: #FFFFFF;
 
   --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
@@ -70,6 +76,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
 }
 
 body {
@@ -212,15 +219,26 @@ ul, ol {
 }
 
 .btn--primary {
-  background: var(--charcoal);
+  background: var(--pink-coral);
   color: var(--color-white);
-  box-shadow: 0 4px 24px rgba(36, 34, 31, 0.18);
+  box-shadow: 0 4px 24px rgba(232, 149, 138, 0.35);
 }
 
 .btn--primary:hover {
-  background: var(--botanical);
+  background: var(--pink-deep);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(105, 116, 93, 0.28);
+  box-shadow: 0 8px 32px rgba(217, 123, 110, 0.4);
+}
+
+.btn--hero-outline {
+  background: var(--pink-coral);
+  color: var(--color-white);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn--hero-outline:hover {
+  background: var(--pink-deep);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .btn--secondary {

@@ -8,7 +8,9 @@
     "build": "vite build",
     "build:pages": "vite build",
     "preview": "vite preview",
-    "images": "node scripts/build-public-images.mjs"
+    "images": "node scripts/process-references.mjs",
+    "process-refs": "node scripts/process-references.mjs",
+    "gift-art": "node scripts/generate-gift-art.mjs"
   },
   "devDependencies": {
     "sharp": "^0.35.4",

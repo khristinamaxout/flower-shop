@@ -4,7 +4,7 @@ import { formatPrice } from '../utils/order.js';
 export function renderGiftBuilder() {
   const items = [
     { id: 'bouquet', label: 'Букет', image: images.giftBuilder.bouquet, alt: 'Букет', price: 2500 },
-    { id: 'balloon', label: 'Шар', image: images.giftBuilder.balloons, alt: 'Воздушные шары', price: 500 },
+    { id: 'balloon', label: 'Шар', image: images.giftBuilder.balloon, alt: 'Воздушные шары', price: 500 },
     { id: 'toy', label: 'Игрушка', image: images.giftBuilder.toy, alt: 'Мягкая игрушка', price: 890 },
     { id: 'card', label: 'Открытка', image: images.giftBuilder.card, alt: 'Авторская открытка', price: 350 },
     { id: 'souvenir', label: 'Сувенир', image: images.giftBuilder.souvenir, alt: 'Сувенир', price: 650 },

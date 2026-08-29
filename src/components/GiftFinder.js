@@ -15,7 +15,7 @@ export function renderGiftFinder() {
             <p class="section-label">Помощник</p>
             <h2 class="section-title" id="gift-finder-title">Не знаете, что подарить?</h2>
             <p class="section-subtitle">
-              Подберём цветы и подарок под человека, повод и ваш бюджет.
+              Поможем выбрать цветы под человека, повод и ваш бюджет.
             </p>
           </header>
 
@@ -41,7 +41,7 @@ export function renderGiftFinder() {
               <div class="gift-finder__results-grid" id="gift-finder-results-grid"></div>
               <div class="gift-finder__actions">
                 <button class="btn btn--secondary" id="gift-finder-reset">Начать заново</button>
-                <a href="#bestsellers" class="btn btn--ghost">Смотреть все хиты →</a>
+                <a href="#products" class="btn btn--ghost">Посмотреть варианты →</a>
               </div>
             </div>
           </div>

@@ -37,35 +37,18 @@ export const categoryOptions = [
   { id: 'compositions', label: 'Композиции' },
   { id: 'single', label: 'Цветы поштучно' },
   { id: 'balloons', label: 'Шары' },
-  { id: 'potted', label: 'Растения' },
+  { id: 'potted', label: 'Комнатные растения' },
   { id: 'toys', label: 'Игрушки' },
   { id: 'souvenirs', label: 'Сувениры' },
   { id: 'paintings', label: 'Картины' },
 ];
 
 export const badgeOptions = [
-  { id: '', label: 'Без badge' },
-  { id: 'bestseller', label: 'Часто заказывают' },
-  { id: 'seasonal', label: 'Сезон' },
-  { id: 'bundle', label: 'Набор' },
+  { id: '', label: 'Без метки' },
+  { id: 'hit', label: 'Хит' },
+  { id: 'new', label: 'Новинка' },
+  { id: 'seasonal', label: 'Сезонное' },
+  { id: 'favorite', label: 'Любимый' },
 ];
 
-export const imageOptions = [
-  'bouquet-01.webp',
-  'bouquet-02.webp',
-  'bouquet-03.webp',
-  'bouquet-04.webp',
-  'bouquet-05.webp',
-  'bouquet-06.webp',
-  'bouquet-07.webp',
-  'bouquet-08.webp',
-  'composition-01.webp',
-  'single-01.webp',
-  'balloons-01.webp',
-  'plants.webp',
-  'toy-01.webp',
-  'souvenir-01.webp',
-  'painting-01.webp',
-  'gift-box.webp',
-  'flowers-detail.webp',
-];
+export { imageOptions } from './image-options.js';
