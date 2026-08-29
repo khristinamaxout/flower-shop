@@ -1,5 +1,5 @@
 /**
- * Локальные фото — нарезанные объекты из /public/references/items/
+ * Реалистичные AI-фото Flora Atelier → /public/references/items/
  */
 const base = import.meta.env.BASE_URL;
 const item = (name) => `${base}references/items/${name}`;
