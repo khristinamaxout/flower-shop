@@ -13,15 +13,18 @@ import { renderDelivery } from './components/Delivery.js';
 import { renderSocialProof } from './components/SocialProof.js';
 import { renderFooter, renderMobileBar, initMobileBar } from './components/Footer.js';
 
-import { scenarios, categories, collections, siteConfig } from './data/catalog.js';
+import { scenarios, categories, collections, siteConfig, applyDelivery } from './data/catalog.js';
 import {
   filterByScenario,
   getByCategory,
-  reloadProducts,
+  bootstrapProducts,
+  products,
   getProductById,
   filterByCollection,
   getBestsellers,
 } from './data/products.js';
+import { fetchDelivery } from './data/public-api.js';
+import { readCache } from './data/store.js';
 import {
   createModal,
   renderModalProducts,
@@ -154,8 +157,46 @@ function initApp() {
   injectSchema();
 
   window.initScrollAnimations = initScrollAnimations;
-  window.addEventListener('storage', () => reloadProducts());
-  window.addEventListener('products-updated', () => reloadProducts());
 }
 
-document.addEventListener('DOMContentLoaded', initApp);
+/** Отпечаток каталога — позволяет перерисовать страницу только при реальных изменениях. */
+function catalogSignature() {
+  return products.map((p) => `${p.id}:${p.price}:${p.image}:${p.available}`).join('|');
+}
+
+async function loadRemoteData() {
+  await Promise.all([
+    bootstrapProducts(),
+    fetchDelivery().then(applyDelivery),
+  ]);
+}
+
+/**
+ * При первом visit'е ждём данные из базы, чтобы не показать устаревшие цены.
+ * Если каталог уже кэширован — рисуем сразу, а обновление подхватываем следом.
+ */
+async function start() {
+  const loading = loadRemoteData().catch((error) => {
+    console.warn('[Flora] Работаем на сохранённых данных:', error.message);
+  });
+
+  if (!readCache()) {
+    await loading;
+    initApp();
+  } else {
+    initApp();
+    const before = catalogSignature();
+    await loading;
+    if (catalogSignature() !== before) initApp();
+  }
+
+  // Вкладка могла провисеть открытой, пока правили каталог в админке.
+  document.addEventListener('visibilitychange', async () => {
+    if (document.hidden) return;
+    const before = catalogSignature();
+    await loadRemoteData().catch(() => null);
+    if (catalogSignature() !== before) initApp();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', start);

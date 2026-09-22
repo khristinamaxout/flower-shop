@@ -1,310 +1,195 @@
-import {
-  saveAllProducts,
-  reloadProducts,
-  badgeLabels,
-} from '../data/products.js';
-import {
-  categoryOptions,
-  badgeOptions,
-  imageOptions,
-  generateProductId,
-  resetProducts,
-} from '../data/store.js';
-import { formatPrice } from '../utils/order.js';
+import './admin.css';
+import { getSupabase, isSupabaseConfigured } from '../data/supabase.js';
+import { mountProducts } from './products-view.js';
+import { mountDelivery } from './delivery-view.js';
+import { esc, toast, withBusy } from './ui.js';
+import { DEMO_MODE, DEMO_ACCOUNT } from './demo-config.js';
 
 const base = import.meta.env.BASE_URL;
-let products = reloadProducts();
-let editingId = null;
+const app = document.getElementById('admin-app');
 
-function imageUrl(filename) {
-  if (!filename) return '';
-  if (filename.startsWith('http') || filename.startsWith('/')) return filename;
-  return `${base}references/items/${filename}`;
-}
+const tabs = [
+  { id: 'products', label: 'Товары', mount: mountProducts },
+  { id: 'delivery', label: 'Доставка', mount: mountDelivery },
+];
 
-function resolveImage(product) {
-  const src = product.image || '';
-  if (src.includes('/references/items/')) {
-    const name = src.split('/references/items/').pop();
-    return imageUrl(name);
+let activeTab = 'products';
+
+/* ------------------------------------------------------------------ запуск */
+
+async function start() {
+  if (!isSupabaseConfigured) {
+    renderSetupNotice();
+    return;
   }
-  if (src.includes('/images/')) {
-    const name = src.split('/images/').pop();
-    return imageUrl(name);
+
+  const { data } = await getSupabase().auth.getSession();
+  if (data.session) {
+    renderPanel(data.session.user);
+  } else {
+    renderLogin();
   }
-  return src;
+
+  getSupabase().auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') renderLogin();
+  });
 }
 
-function filenameFromProduct(product) {
-  const src = product.image || '';
-  const match = src.match(/(?:references\/items|images)\/([^/?#]+)/);
-  return match ? match[1] : 'pink-01.webp';
-}
+/* ------------------------------------------------------- экран без настройки */
 
-function showToast(message) {
-  let toast = document.querySelector('.admin-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.className = 'admin-toast';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.classList.add('is-visible');
-  setTimeout(() => toast.classList.remove('is-visible'), 2600);
-}
-
-function renderStats() {
-  const active = products.filter((p) => p.available !== false).length;
-  const bestsellers = products.filter((p) => p.bestseller).length;
-  const seasonal = products.filter((p) => p.seasonal).length;
-
-  return `
-    <div class="admin__stats">
-      <div class="stat-card"><div class="stat-card__label">Всего</div><div class="stat-card__value">${products.length}</div></div>
-      <div class="stat-card"><div class="stat-card__label">Активных</div><div class="stat-card__value">${active}</div></div>
-      <div class="stat-card"><div class="stat-card__label">Хиты</div><div class="stat-card__value">${bestsellers}</div></div>
-      <div class="stat-card"><div class="stat-card__label">Сезон</div><div class="stat-card__value">${seasonal}</div></div>
+function renderSetupNotice() {
+  app.innerHTML = `
+    <div class="login">
+      <div class="login__card">
+        <h1 class="login__title">Админка ещё не подключена</h1>
+        <p class="login__text">
+          Чтобы панель заработала, нужно один раз создать базу в Supabase
+          и вписать два ключа в файл <code>src/data/supabase-config.js</code>.
+        </p>
+        <p class="login__text">
+          Пошаговая инструкция лежит в файле <code>ADMIN.md</code> в папке проекта.
+        </p>
+        <a class="btn btn--secondary" href="${base}">← Вернуться на сайт</a>
+      </div>
     </div>
   `;
 }
 
-function renderTable() {
-  return `
-    <table class="products-table">
-      <thead>
-        <tr>
-          <th>Фото</th>
-          <th>Название</th>
-          <th>Категория</th>
-          <th>Цена</th>
-          <th>Статус</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        ${products
-          .map((p) => {
-            const cat = categoryOptions.find((c) => c.id === p.category)?.label || p.category;
-            const status = p.available === false ? '<span class="badge-pill badge-pill--off">Скрыт</span>' : '<span class="badge-pill">Активен</span>';
-            const badge = p.badge ? `<span class="badge-pill">${badgeLabels[p.badge] || p.badge}</span>` : '';
-            return `
-              <tr>
-                <td><img class="products-table__thumb" src="${resolveImage(p)}" alt=""></td>
-                <td>
-                  <div class="products-table__name">${p.name}</div>
-                  ${badge}
-                </td>
-                <td>${cat}</td>
-                <td class="products-table__price">${formatPrice(p.price)}${p.oldPrice ? ` <s>${formatPrice(p.oldPrice)}</s>` : ''}</td>
-                <td>${status}</td>
-                <td>
-                  <button class="btn btn--secondary btn--sm" data-edit="${p.id}">Изменить</button>
-                  <button class="btn btn--danger btn--sm" data-delete="${p.id}">Удалить</button>
-                </td>
-              </tr>
-            `;
-          })
-          .join('')}
-      </tbody>
-    </table>
+/* ------------------------------------------------------------------- вход */
+
+function renderLogin(message = '') {
+  app.innerHTML = `
+    <div class="login">
+      <div class="login__card">
+        <h1 class="login__title">Flora Atelier</h1>
+        <p class="login__text">Панель управления сайтом</p>
+
+        ${message ? `<p class="login__error">${esc(message)}</p>` : ''}
+
+        ${
+          DEMO_MODE
+            ? `
+          <button class="btn btn--primary btn--full" id="demo-login">Войти в демо-режиме</button>
+          <p class="login__hint">
+            Показательный вход без пароля — чтобы продемонстрировать,
+            как владелец магазина управляет каталогом.
+          </p>
+          <button type="button" class="login__toggle" id="show-manual">
+            Войти с обычным доступом
+          </button>`
+            : ''
+        }
+
+        <form id="login-form" class="login__form ${DEMO_MODE ? 'is-hidden' : ''}">
+          <div class="form-field">
+            <label for="email">Почта</label>
+            <input id="email" name="email" type="email" autocomplete="username" required>
+          </div>
+          <div class="form-field">
+            <label for="password">Пароль</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="btn btn--secondary btn--full" id="login-submit">Войти</button>
+        </form>
+
+        <a class="login__back" href="${base}">← Вернуться на сайт</a>
+      </div>
+    </div>
   `;
+
+  document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+  document.getElementById('demo-login')?.addEventListener('click', (e) =>
+    signIn(DEMO_ACCOUNT.email, DEMO_ACCOUNT.password, e.currentTarget)
+  );
+
+  document.getElementById('show-manual')?.addEventListener('click', (e) => {
+    document.getElementById('login-form').classList.remove('is-hidden');
+    e.currentTarget.remove();
+    document.getElementById('email').focus();
+  });
 }
 
-function renderForm(product = null) {
-  const p = product || {
-    name: '',
-    price: '',
-    oldPrice: '',
-    description: '',
-    emotional: '',
-    category: 'bouquets',
-    badge: '',
-    image: 'bouquet-01.webp',
-    bestseller: false,
-    seasonal: false,
-    available: true,
-    addOns: true,
-  };
-
-  const imageFile = product ? filenameFromProduct(product) : p.image;
-
-  return `
-    <form class="admin-form" id="product-form">
-      <h2 class="admin-form__title">${editingId ? 'Редактировать товар' : 'Добавить товар'}</h2>
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="name">Название</label>
-          <input id="name" name="name" required value="${p.name || ''}">
-        </div>
-        <div class="form-field">
-          <label for="category">Категория</label>
-          <select id="category" name="category">
-            ${categoryOptions.map((c) => `<option value="${c.id}" ${p.category === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="price">Цена (₽)</label>
-          <input id="price" name="price" type="number" min="0" required value="${p.price ?? ''}">
-        </div>
-        <div class="form-field">
-          <label for="oldPrice">Старая цена (₽)</label>
-          <input id="oldPrice" name="oldPrice" type="number" min="0" value="${p.oldPrice ?? ''}">
-        </div>
-        <div class="form-field form-grid__full">
-          <label for="tagline">Короткое описание</label>
-          <input id="tagline" name="tagline" value="${p.tagline || ''}">
-        </div>
-        <div class="form-field form-grid__full">
-          <label for="description">Полное описание</label>
-          <textarea id="description" name="description">${p.description || ''}</textarea>
-        </div>
-        <div class="form-field form-grid__full">
-          <label for="emotional">Эмоциональный текст</label>
-          <textarea id="emotional" name="emotional">${p.emotional || ''}</textarea>
-        </div>
-        <div class="form-field">
-          <label for="size">Размер</label>
-          <input id="size" name="size" value="${p.size || ''}" placeholder="Средний · ~45 см">
-        </div>
-        <div class="form-field">
-          <label for="composition">Состав</label>
-          <input id="composition" name="composition" value="${p.composition || ''}" placeholder="Розы, эвкалипт, зелень">
-        </div>
-        <div class="form-field">
-          <label for="image">Фотография</label>
-          <select id="image" name="image">
-            ${imageOptions.map((img) => `<option value="${img}" ${imageFile === img ? 'selected' : ''}>${img}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="badge">Метка</label>
-          <select id="badge" name="badge">
-            ${badgeOptions.map((b) => `<option value="${b.id}" ${(p.badge || '') === b.id ? 'selected' : ''}>${b.label}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-field form-grid__full form-checks">
-          <label><input type="checkbox" name="seasonal" ${p.seasonal ? 'checked' : ''}> Сезонный</label>
-          <label><input type="checkbox" name="available" ${p.available !== false ? 'checked' : ''}> Показывать на сайте</label>
-          <label><input type="checkbox" name="addOns" ${p.addOns ? 'checked' : ''}> Доп. товары</label>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="btn btn--primary">${editingId ? 'Сохранить' : 'Добавить'}</button>
-        ${editingId ? '<button type="button" class="btn btn--secondary" id="cancel-edit">Отмена</button>' : ''}
-      </div>
-    </form>
-  `;
+function handleLogin(e) {
+  e.preventDefault();
+  return signIn(
+    document.getElementById('email').value.trim(),
+    document.getElementById('password').value,
+    document.getElementById('login-submit')
+  );
 }
 
-function render() {
-  const app = document.getElementById('admin-app');
+async function signIn(email, password, button) {
+  await withBusy(button, 'Входим…', async () => {
+    const { data, error } = await getSupabase().auth.signInWithPassword({ email, password });
+
+    if (error) {
+      renderLogin(explainAuthError(error, email));
+      return;
+    }
+    renderPanel(data.user);
+  });
+}
+
+function explainAuthError(error, email) {
+  if (!error.message.includes('Invalid login credentials')) return error.message;
+
+  return email === DEMO_ACCOUNT.email
+    ? 'Демо-доступ ещё не создан в Supabase — см. ADMIN.md, шаг 1.'
+    : 'Неверная почта или пароль.';
+}
+
+/* ------------------------------------------------------------------ панель */
+
+function renderPanel(user) {
   app.innerHTML = `
     <div class="admin">
       <header class="admin__header">
-        <h1 class="admin__title">Flora Atelier — админ</h1>
+        <div>
+          <h1 class="admin__title">Flora Atelier</h1>
+          <p class="admin__user">${esc(user?.email || '')}</p>
+        </div>
         <div class="admin__actions">
-          <a href="${base}" class="btn btn--secondary">← На сайт</a>
-          <button class="btn btn--secondary" id="reset-data">Сбросить данные</button>
-          <button class="btn btn--primary" id="add-new">+ Товар</button>
+          <a href="${base}" class="btn btn--secondary" target="_blank" rel="noopener">Открыть сайт</a>
+          <button class="btn btn--secondary" id="logout">Выйти</button>
         </div>
       </header>
-      <main class="admin__main">
-        ${renderStats()}
-        ${renderTable()}
-        ${renderForm(editingId ? products.find((p) => p.id === editingId) : null)}
-      </main>
+
+      <nav class="admin__tabs" role="tablist">
+        ${tabs
+          .map(
+            (tab) => `
+          <button
+            role="tab"
+            class="admin__tab ${activeTab === tab.id ? 'is-active' : ''}"
+            data-tab="${tab.id}"
+            aria-selected="${activeTab === tab.id}"
+          >${esc(tab.label)}</button>`
+          )
+          .join('')}
+      </nav>
+
+      <main class="admin__main" id="tab-content"></main>
     </div>
   `;
 
-  bindEvents();
-}
-
-function bindEvents() {
-  document.getElementById('add-new')?.addEventListener('click', () => {
-    editingId = null;
-    render();
-    document.getElementById('product-form')?.scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('logout').addEventListener('click', async () => {
+    await getSupabase().auth.signOut();
+    toast('Вы вышли из панели');
   });
 
-  document.getElementById('cancel-edit')?.addEventListener('click', () => {
-    editingId = null;
-    render();
-  });
-
-  document.getElementById('reset-data')?.addEventListener('click', () => {
-    if (confirm('Вернуть каталог к исходным данным?')) {
-      resetProducts();
-      products = reloadProducts();
-      editingId = null;
-      render();
-      showToast('Данные сброшены');
-    }
-  });
-
-  document.querySelectorAll('[data-edit]').forEach((btn) => {
+  app.querySelectorAll('[data-tab]').forEach((btn) =>
     btn.addEventListener('click', () => {
-      editingId = btn.dataset.edit;
-      render();
-      document.getElementById('product-form')?.scrollIntoView({ behavior: 'smooth' });
-    });
-  });
+      activeTab = btn.dataset.tab;
+      renderPanel(user);
+    })
+  );
 
-  document.querySelectorAll('[data-delete]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if (!confirm('Удалить этот товар?')) return;
-      products = products.filter((p) => p.id !== btn.dataset.delete);
-      saveAllProducts(products);
-      if (editingId === btn.dataset.delete) editingId = null;
-      render();
-      showToast('Товар удалён');
-    });
-  });
-
-  document.getElementById('product-form')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const imageName = fd.get('image');
-    const payload = {
-      name: fd.get('name').trim(),
-      price: Number(fd.get('price')),
-      oldPrice: fd.get('oldPrice') ? Number(fd.get('oldPrice')) : null,
-      tagline: fd.get('tagline').trim(),
-      description: fd.get('description').trim(),
-      emotional: fd.get('emotional').trim(),
-      size: fd.get('size').trim(),
-      composition: fd.get('composition').trim(),
-      category: fd.get('category'),
-      badge: fd.get('badge') || null,
-      image: imageUrl(imageName),
-      alt: `${fd.get('name')} — Flora Atelier`,
-      bestseller: fd.get('badge') === 'hit',
-      seasonal: fd.get('seasonal') === 'on',
-      available: fd.get('available') === 'on',
-      addOns: fd.get('addOns') === 'on',
-      tags: [],
-      recipient: [],
-      occasion: [],
-      budget: Number(fd.get('price')),
-    };
-
-    if (editingId) {
-      products = products.map((p) => (p.id === editingId ? { ...p, ...payload } : p));
-      showToast('Товар обновлён');
-    } else {
-      products = [
-        ...products,
-        {
-          id: generateProductId(products),
-          ...payload,
-        },
-      ];
-      showToast('Товар добавлен');
-    }
-
-    saveAllProducts(products);
-    editingId = null;
-    render();
+  const content = document.getElementById('tab-content');
+  const tab = tabs.find((t) => t.id === activeTab);
+  tab.mount(content).catch((error) => {
+    content.innerHTML = `<p class="admin-note admin-note--error">${esc(error.message)}</p>`;
   });
 }
 
-render();
+start();

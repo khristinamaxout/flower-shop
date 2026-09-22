@@ -822,6 +822,21 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* Вход в панель управления: заметен, только если знать, что он здесь. */
+.footer__panel {
+  display: inline-block;
+  padding: 0 0.6rem;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+
+.footer__panel:hover,
+.footer__panel:focus-visible {
+  opacity: 1;
+}
+
 @media (min-width: 768px) {
   .footer__grid {
     grid-template-columns: 1.5fr 1fr 1fr 1fr;

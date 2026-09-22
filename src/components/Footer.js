@@ -17,7 +17,6 @@ export function renderFooter() {
             <a href="#gifts">Подарки</a>
             <a href="#delivery">Доставка</a>
             <a href="#reviews">Отзывы</a>
-            <a href="${base}admin.html">Админ-панель</a>
           </nav>
           <div class="footer__contact">
             <a href="${siteConfig.phoneLink}" class="footer__phone">${siteConfig.phone}</a>
@@ -39,7 +38,11 @@ export function renderFooter() {
           </div>
         </div>
         <div class="footer__bottom">
-          <span>&copy; ${year} ${siteConfig.name}. Демонстрационный сайт.</span>
+          <span>
+            &copy; ${year} ${siteConfig.name}. Демонстрационный сайт.<!--
+            Неприметный вход в панель управления для показа заказчикам.
+         --><a href="${base}admin.html" class="footer__panel" aria-label="Панель управления" title="Панель управления">&middot;</a>
+          </span>
           <span>Цветы с доставкой по Саратову</span>
         </div>
       </div>

@@ -140,6 +140,20 @@ export const deliveryInfo = {
   ],
 };
 
+/**
+ * Подставляет условия доставки, заданные в админке.
+ * Объект меняется на месте, потому что компоненты читают его при отрисовке.
+ */
+export function applyDelivery(remote) {
+  if (!remote) return deliveryInfo;
+  if (remote.headline) deliveryInfo.headline = remote.headline;
+  if (remote.subline) deliveryInfo.subline = remote.subline;
+  if (Array.isArray(remote.items) && remote.items.length) {
+    deliveryInfo.items = remote.items;
+  }
+  return deliveryInfo;
+}
+
 export const siteConfig = {
   name: 'Flora Atelier',
   logoLine: 'Букет',

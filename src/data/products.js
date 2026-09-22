@@ -1,5 +1,6 @@
 import { images } from './images.js';
-import { loadProducts, saveProducts as persistProducts } from './store.js';
+import { readCache, writeCache } from './store.js';
+import { fetchProducts } from './public-api.js';
 
 const b = images.bouquets;
 
@@ -182,16 +183,25 @@ export const defaultProducts = [
   },
 ];
 
-export let products = loadProducts(defaultProducts);
+/**
+ * Стартовое содержимое: недавно закэшированный каталог, иначе встроенный.
+ * Настоящие данные подтягивает bootstrapProducts() перед первой отрисовкой.
+ */
+export let products = readCache() || structuredClone(defaultProducts);
 
-export function reloadProducts() {
-  products = loadProducts(defaultProducts);
+/** Загружает каталог из базы. При недоступности сервера оставляет то, что есть. */
+export async function bootstrapProducts() {
+  const remote = await fetchProducts();
+  if (remote) {
+    products = remote;
+    writeCache(remote);
+  }
   return products;
 }
 
-export function saveAllProducts(list) {
+export function setProducts(list) {
   products = list;
-  persistProducts(list);
+  writeCache(list);
 }
 
 function active() {

@@ -15,5 +15,8 @@
   "devDependencies": {
     "sharp": "^0.35.4",
     "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.109.0"
   }
 }
